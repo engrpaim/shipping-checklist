@@ -1,3 +1,189 @@
-table {
-    border: 1px solid;
+@keyframes floatInFromBottom {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.booking-data-sheet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 80%;
+    gap: 1rem;
+    padding: 2rem 0rem;
+    border-radius: 3rem;
+    margin: 2rem 0rem;
+    min-width: fit-content;
+    background-image: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%);
+    animation: floatInFromBottom 0.5s ease-out forwards;
+}
+.booking-title {
+    font-size: 2rem;
+    width: 80%;
+    font-weight: bold;
+    justify-self: start;
+}
+.booking-header {
+    display: flex;
+    justify-content: space-between;
+    width: 80%;
+    padding: 2rem 0rem;
+    border-radius: 2rem;
+}
+
+.booking-logo {
+    background-image: linear-gradient(
+        to right,
+        #ece9e6 0%,
+        #ffffff 51%,
+        #ece9e6 100%
+    );
+
+    border-radius: 1rem;
+}
+
+.booking-logo {
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    box-shadow: 0 0 20px #eee;
+    border-radius: 10px;
+    display: block;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+.booking-logo:hover {
+    background-position: right center; /* change the direction of the change here */
+    text-decoration: none;
+}
+.booking-header h1,
+.booking-header strong {
+    margin: 1rem 0rem;
+    font-size: 1.2rem;
+}
+
+.booking-header h1 {
+    font-weight: normal;
+}
+
+.booking-left,
+.booking-right {
+    margin: 0 6rem;
+}
+
+.booking-left,
+.booking-right h1 {
+    font-weight: normal;
+}
+.booking-details {
+    font-weight: normal;
+    text-align: center;
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 2rem;
+    width: 80%;
+    padding: 2rem 3rem;
+}
+.booking-compile {
+    display: flex;
+    flex-direction: column;
+    flex-content: center;
+    align-items: center;
+    width: 100%;
+}
+.booking-details td,
+th {
+    padding: 0.5rem 0.5rem;
+}
+
+.booking-details td {
+    border-bottom: 0.1rem solid #e2e8f0;
+    box-shadow: 0px 1px 3px -2px rgba(0, 0, 0, 0.24);
+}
+
+.booking-details tr:hover {
+    background: #024a70;
+    color: white;
+    font-style: bold;
+    transform: scale(1.03);
+    cursor: pointer;
+    transition: transform 0.3s ease, background 0.3s ease, color 0.3s ease;
+}
+.file-uploader-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 90%;
+    padding: 2rem 0rem;
+}
+.upload-button {
+    display: inline-block;
+    padding: 2rem 3rem;
+    background-color: #eff2f5;
+    border: 0.3rem dashed;
+    font-size: 1.5rem;
+    color: white;
+    font-weight: bold;
+    border-radius: 3rem;
+    color: #b7c2d2;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.upload-button:hover {
+    color: white;
+    background-color: #8ab9ff;
+}
+
+.button-container button {
+    background: #f1f5f9;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.button-container {
+    display: flex;
+    gap: 2rem;
+}
+
+.remove-icon {
+    background: #f1f5f9;
+    color: #ffc1c5;
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.remove-icon:hover {
+    background: #f1f5f9;
+    color: #c82909;
+    transform: scale(1.03);
+    stroke-width: 10px;
+}
+.book-logo {
+    color: #94f4b6;
+    transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+}
+.book-logo:hover {
+    color: #218331;
+    transform: scale(1.03);
+}
+
+/*LOWEST PART DIV*/
+
+.button-combine {
+    display: flex;
+    gap: 2rem;
+    width: 80%;
+    justify-content: center;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #f1f5f9;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
 }

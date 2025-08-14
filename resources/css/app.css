@@ -4,17 +4,29 @@
     font-family: Garamond, serif;
     font-size: 1rem;
 }
-
+body {
+    background-image: linear-gradient(to top, #fff1eb 0%, #ace0f9 100%);
+    background-repeat: no-repeat;
+    background-size: cover;
+    min-height: 100vh;
+    max-height: fit-content;
+}
 /*Global*/
 .nav-bar {
     position: fixed;
     top: 0;
     width: 100%;
+    z-index: 90;
+    background-image: linear-gradient(to top, #e6e9f0 0%, #eef1f5 100%);
 }
 
 .children-container {
+    display: flex;
+    flex-content: center;
+    flex-direction: column;
     margin: 3rem;
     margin-top: 5rem;
+    width: 100%;
 }
 
 /*Navigation bar*/
@@ -23,7 +35,6 @@
     justify-content: space-between;
     width: 100hv;
     margin: 2rem 15rem;
-    background: ;
 }
 
 .nav-bar-left {

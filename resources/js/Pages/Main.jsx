@@ -21,7 +21,7 @@ export default function Main() {
             <Head title={cpitalizedFirstLetter}/>
             <MainLayout>
                 <div className='children-container'>
-                    <h1>{content}</h1>
+                    {content}
                 </div>
             </MainLayout>
         </>
