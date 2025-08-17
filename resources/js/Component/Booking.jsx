@@ -9,6 +9,7 @@ import '../../css/booking.css';
 import {PickupDateLogo , DestinationLogo , TotalPalletLogo , ContainerLogo,BookLogo , RemoveLogo,  ExcelFileSvg } from '../SVG/ShippingLogos';
 export default function Booking() {
     const firstHold = useRef(false);
+    const sameContainerHold = useRef(false);
     const containerRef = useRef(false);
     const displayData = useRef({});
     const currentKey = useRef(0);
@@ -19,13 +20,14 @@ export default function Booking() {
     const currentEnd = useRef(false);
     const currentType = useRef(false);
     const holdBoth = useRef(false);
+
     /*Track State*/
     const [excelData, setExcelData] = useState(null);
     const [firstData, setFirstData] = useState(null);
     const [totalPalletDetect , setTotalPalletDetect] =useState(null);
     const [fileSource , setFileSource] =useState(null);
     const [sizeIdentifier , setSizeIdentifier] = useState(null);
-
+    const [displayDataState, setDisplayDataState] = useState({});
      /*Manipulate Excel file data*/
     const handleFileChange = (e) => {
 
@@ -106,7 +108,12 @@ export default function Booking() {
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
 
-
+    function getValidQuantity(index) {
+                            const data = excelData[index];
+                            console.log(data.QUANTITY);
+                            const quantity = data && data.QUANTITY;
+                            return (quantity !== 'QUANTITY' && quantity !== '?' && quantity > 0) ? quantity : false;
+                        }
 
     function setDetails(key,value){
                     /**
@@ -124,12 +131,12 @@ export default function Booking() {
                     let pickUpDate;
                     let pickUpTime;
 
-                    if( value.AAMODEL !== '?'&& forwarder.current !==  value.AAMODEL && value.BINVOICE_NO === '?'){
+                    if( value.AAMODEL !== '?'&& forwarder.current !==  value.AAMODEL && value.BINVOICE_NO === '?' && !sameContainerHold.current){
                         forwarder.current= value.AAMODEL;
                         console.log("----FORWARDER: "+forwarder.current + " ------- VALUE: " + value.AAMODEL + "---- IN KEY: " + key);
                     }
 
-                    if(!currentEnd.current && !currentStart.current  && !firstHold.current && value.AAATYPE !== '?' && value.ANO_PALLETS !== '?' && value.BINVOICE_NO !== '?' && value.AAATYPE !== 'TYPE'){
+                    if(!currentEnd.current && !currentStart.current  && !firstHold.current && value.AAATYPE !== '?' && value.ANO_PALLETS !== '?' && value.BINVOICE_NO !== '?' && value.AAATYPE !== 'TYPE' && !sameContainerHold.current && (value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL"))){
 
                         currentStart.current = Number(key);
                         console.log( "----- DATA START: " , currentStart.current);
@@ -138,21 +145,32 @@ export default function Booking() {
 
                     }
 
-                    if(!currentEnd.current && currentStart.current && firstHold.current && value.AAATYPE !== '?' &&  currentStart.current !== key ){
+                    if(!currentEnd.current && currentStart.current && firstHold.current && value.AAATYPE !== '?' &&  currentStart.current !== Number(key)&& !sameContainerHold.current ){
 
                         if(value.AAMODEL === 'MODEL' && currentStart.current !== Number(key) ){
-                            currentEnd.current = key - 2;
+                            currentEnd.current = Number(key) - 2;
                         }else if (value.AAMODEL !== 'MODEL' && currentStart.current !== Number(key)){
-                            currentEnd.current = key - 1;
+                            currentEnd.current = Number(key) - 1;
                         }
 
                         if(currentEnd.current && value.AAATYPE !== "?"){
-                            console.log( "----- DATA END: " , currentEnd.current, "KEY ", key, " VALUE", value.AAATYPE);
+                            console.log( "----- DATA END: " , currentEnd.current, "KEY ", Number(key), " VALUE", value.AAATYPE);
                             displayData.current[currentStart.current] = {
-                                                                ...displayData.current[key],
+                                                                ...displayData.current[Number(key)],
                                                                 'START': currentStart.current ? currentStart.current: '?',
                                                                 'END': currentEnd.current ? currentEnd.current: '?',
+                                                                'CONTAINER': 'NOT FOUND',
+                                                                'FORWARDER': 'INVALID',
+                                                                'DESTINATION': 'NOT FOUND',
+                                                                'PICK_UP': 'INVALID',
+                                                                'PICK_TIME':'INVALID',
+
                             };
+
+                            // currentStart.current = null;
+                            // currentEnd.current = null;
+                            // firstHold.current = false;
+                            // holdBoth.current = false;
 
                         }
 
@@ -160,93 +178,131 @@ export default function Booking() {
                     }
 
                     if(currentEnd.current && !holdBoth.current){
-                       // console.log('START',currentStart.current,'END:',currentEnd.current);
-                    //    console.log(key);
-                    //    holdBoth.current = true;
-                    //    console.log(excelData[Number(key)].AAATYPE);
-                    //    if(excelData[Number(key)].AAATYPE !== '?'){
+                        holdBoth.current = true;//Hold if strat and end is set
+                        console.log('Evaluate Current Row------', key);
+                        //Detect if same forwarder
+                        if(value.AAATYPE !== '?' && value.AAMODEL !== '?'){
 
-                    //         currentStart.current = Number(key);
-                    //         currentEnd.current
-                    //         displayData.current[currentStart.current] = {
-                    //                                             ...displayData.current[key],
-                    //                                             'START': currentStart.current ? currentStart.current: '?',
-                    //         };
-                    //    }
+                            console.log('PASSED CONDITION');
+                            let checkOneUp = Number(key) + 1;
+                            let checkTwoUp = Number(key) + 2;
+                            // console.log('CURRENT POSITION:',excelData[currentStart.current] && excelData[currentStart.current ].QUANTITY ?excelData[ currentStart.current].QUANTITY: null);
+                            // console.log('CHECK UP 1: ',excelData[checkOneUp] && excelData[checkOneUp].QUANTITY ?excelData[checkOneUp].QUANTITY: null);
+                            // console.log('CHECK UP 2: ',excelData[checkTwoUp] && excelData[checkTwoUp].QUANTITY? excelData[checkTwoUp].QUANTITY:null);
 
+                            let currentCheck = getValidQuantity(Number(key));
+                            let checkOneUpQty = getValidQuantity(checkOneUp);
+                            let checkTwoUpQty = getValidQuantity(checkTwoUp);
+
+                            if (currentCheck) {
+                                 console.log("Current: ",excelData[ currentStart.current].QUANTITY, "Key: ",key);
+                                 currentStart.current = Number(key);
+                            }else if (checkOneUpQty) {
+                                 console.log("One up: ",excelData[checkOneUp].QUANTITY,"Key: ",key," --->",Number(key) + 1);
+                                 currentStart.current = Number(key) + 1 ;
+                            }else if (checkTwoUpQty) {
+                                console.log("Two up: ",excelData[checkTwoUp].QUANTITY,"Key: ",key," --->",Number(key) + 2);
+                                currentStart.current = Number(key) + 2 ;
+                            }
+                            sameContainerHold.current = true;
+                            currentEnd.current =false;
+                            holdBoth.current = false;
+                        }
+
+                          console.log('START SAME FORWADER DIFFERENT CONTAINER -->',currentStart.current,'---------',key,'------>',value.QUANTITY) ;
                     }
 
 
 
-                    //Get the start of the Item
+                    if(!currentEnd.current && currentStart.current && firstHold.current && value.AAATYPE === '?' && value.QUANTITY === '?' &&  currentStart.current !== Number(key) && sameContainerHold.current ){
+                        currentEnd.current = Number(key) - 1;
+                        console.log('END SAME FORWADER DIFFERENT CONTAINER -->',currentEnd.current);
+                        displayData.current[currentStart.current] = {
+                                                                ...displayData.current[currentStart.current],
+                                                                'START': currentStart.current ? currentStart.current: '?',
+                                                                'END': currentEnd.current ? currentEnd.current: '?',
+                                                                'CONTAINER': 'NOT FOUND',
+                                                                'FORWARDER': 'INVALID',
+                                                                'DESTINATION': 'NOT FOUND',
+                                                                'PICK_UP': 'INVALID',
+                                                                'PICK_TIME':'INVALID',
 
-                    // if( key > 0 && !firstHold.current && value.AAMODEL !== 'MODEL' && value.AAMODEL !== '?' && value.ANO_PALLETS !== '?' && value.QUANTITY !== '?' ){
-                    //     setFirstData(value.AAATYPE);
-                    //     if(!(Object.keys(displayData.current).length === 1)){
-                    //         /*initial table*/
-                    //         keyDynamic = currentKey.current = key;
-                    //         pickUpDate = excelDateToJSDate(value.PICK_UP_DATE);
-                    //         pickUpTime = excelTimeToHHMM(value.PICK_UP_TIME);
-                    //         endKeys = currentKey.current - 1;
-                    //         value.AAATYPE !== '?' ? containerRef.current =  value.AAATYPE : 'NOT FOUND';
-                    //     }
-                    //     else{
-                    //         console.log('--------------------------------');
-                    //         endKeys = currentKey.current -1;
-                    //         keyDynamic = endKeys ;
-                    //         containerRef.current =  excelData[key-1].AAATYPE;
-                    //         pickUpTime = excelTimeToHHMM(excelData[key-1].PICK_UP_TIME);
-                    //         pickUpDate = excelDateToJSDate(excelData[key-1].PICK_UP_DATE);
-                    //         console.log('--------------------------------');
-                    //     }
-                    //     value.DESTINATION !== '?' ? destination.current =  value.DESTINATION: 'NOT FOUND';
+                        };
+                        console.log('-------------------------RESET-------------------------------------');
+                        sameContainerHold.current = false;
+                        currentStart.current = false;
+                        currentEnd.current = false;
+                        firstHold.current = false;
+                        holdBoth.current = false;
+                        forwarder.current = false;
+                    }
 
+                      if(sameContainerHold.current && ( value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL") ) && value.QUANTITY !== 'QUANTITY' &&  value.QUANTITY !== '?' ){
+                        if(key > currentStart.current){
+                            console.log('STEP DOWN 1 ARRAY END: ' ,key - 1);
+                            currentEnd.current = Number(key) - 1;
+                            displayData.current[currentStart.current] = {
+                                                                ...displayData.current[currentStart.current],
+                                                                'START': currentStart.current ? currentStart.current: '?',
+                                                                'END': currentEnd.current ? currentEnd.current: '?',
+                                                                'CONTAINER': 'NOT FOUND',
+                                                                'FORWARDER': 'INVALID',
+                                                                'DESTINATION': 'NOT FOUND',
+                                                                'PICK_UP': 'INVALID',
+                                                                'PICK_TIME':'INVALID',
 
+                            };
+                            console.log('ARRAY START: ' ,key);
+                            currentStart.current = Number(key);
+                        }
+                    }
 
-                        displayData.current[currentKey.current] = {
-                                                    ...displayData.current[key],
-                                                    'CONTAINER': containerRef.current ? containerRef.current : 'NOT FOUND',
-                                                    'START': Number(keyDynamic),
-                                                    'FORWARDER':forwarder.current ? forwarder.current : 'INVALID',
-                                                    'DESTINATION': destination.current  ?  destination.current  : 'NOT FOUND',
-                                                    'PICK_UP': pickUpDate ?  pickUpDate : 'INVALID',
-                                                    'PICK_TIME':pickUpTime ? pickUpTime :'INVALID',
-                                                    'END' :  endKeys ?  endKeys : 0
-                                                    };
+                    if(Number(key) == excelData.length - 1 ) {
+                        console.log('see START: ' ,Number(key) == excelData.length - 1 ) ;
+                        for (let i = excelData.length - 1 ; i  > currentStart.current ; i--){
+                            if(excelData[i].QUANTITY !== '?' && excelData[i].QUANTITY !== 'QUANTITY'){
+                                    currentEnd.current = i;
 
-                    //     firstHold.current = true;
+                                    displayData.current[i] = {
+                                                                    ...displayData.current[currentStart.current],
+                                                                    'START': currentStart.current ? currentStart.current: '?',
+                                                                    'END': currentEnd.current ? currentEnd.current: '?',
+                                                                    'CONTAINER': 'NOT FOUND',
+                                                                    'FORWARDER': 'INVALID',
+                                                                    'DESTINATION': 'NOT FOUND',
+                                                                    'PICK_UP': 'INVALID',
+                                                                    'PICK_TIME':'INVALID',
 
+                                    };
+                            }
+                        }
 
-                    // }
+                        if(!currentEnd.current < currentEnd.current ){
+                               currentEnd.current = currentStart.current;
 
-                    // //Get the end of the Item
-                    // if(key > 1 && value.AAATYPE !== '?' && value.AAATYPE !== firstData && value.BINVOICE_NO !== '?'){
-                    //      displayData.current[currentKey.current] = {
-                    //                                                  ...displayData.current[currentKey.current],
-                    //                                                  'END': key - 1
-                    //                                                 };
+                                displayData.current[currentStart.current] = {
+                                                                ...displayData.current[currentStart.current],
+                                                                'START': currentStart.current ? currentStart.current: '?',
+                                                                'END': currentStart.current? currentStart.current: '?',
+                                                                'CONTAINER': 'NOT FOUND',
+                                                                'FORWARDER': 'INVALID',
+                                                                'DESTINATION': 'NOT FOUND',
+                                                                'PICK_UP': 'INVALID',
+                                                                'PICK_TIME':'INVALID',
 
-                    //     if(!(key === currentKey.current)){
-
-                    //         currentKey.current = key;
-                    //         firstHold.current = false;
-
-                    //     }
-
-
-
-                    // }
-
-
-
+                                };
+                        }
+                    }
     }
 
+    console.log(displayData.current);
+    console.log(excelData);
 
     useEffect(() => {
 
 
 
-        if (!excelData ||excelData.length === 0) return;
+        if (!excelData || excelData.length === 0) return;
 
         displayData.current = {};
         firstHold.current = false;
@@ -273,7 +329,7 @@ export default function Booking() {
                             total += numberOfPalllets;
                         }
 
-                        if(i = end){
+                        if(i === end){
                             displayData.current[key] = {
                                                             ...displayData.current[key],
                                                             'TOTAL_PALLETS': total
@@ -284,8 +340,8 @@ export default function Booking() {
             );
         });
 
+         setDisplayDataState({ ...displayData.current });
 
-        console.log(displayData);
 
 
     },[excelData]);
@@ -328,7 +384,8 @@ export default function Booking() {
         console.log(e.currentTarget.value);
 
     };
-    console.log(excelData);
+
+    console.log(displayData.current);
     return (
         <div className='booking-compile'>
 
@@ -352,18 +409,23 @@ export default function Booking() {
                 </div>
             </div>
 
-            {excelData && Object.keys(excelData > 0) &&(
-                Object.entries(displayData.current).flatMap(([key1, value1]) =>
+            {excelData && excelData.length > 0 &&(
+
+                Object.entries(displayDataState).flatMap(([key1, value1]) =>
                 {
+
                     if (value1.START > 0 && value1.END > 0) {
+
                         const buttonValue = value1.START +"_"+value1.END;
                         const buttonContainer =String(value1.CONTAINER).replace(/ /g,"_");
 
                         const rows = Array.from({ length: value1.END - value1.START + 1 },(_, idx) => {
                             const i = value1.START + idx;
+
                             const row = excelData[i];
                             if (!row) return null;
-                            const carton = Math.round(row.NO_OF_CARTON);
+                            const rawCarton = Number(row?.NO_OF_CARTON);
+                            const carton = isNaN(rawCarton) ? '?' : Math.round(rawCarton);
                             const replaceSpace =String(value1.CONTAINER).replace(/ /g,"_");
 
                             return (
@@ -381,7 +443,7 @@ export default function Booking() {
 
                         return (
                                 <React.Fragment key={key1}>
-                                <div className='confirmModule'><h1>HELLO</h1></div>
+                                {/* <div className='confirmModule'><h1>HELLO</h1></div> */}
                                     <div className='booking-data-sheet'>
                                         <div className='booking-title'>Booking Confirmation</div>
                                         <div className='booking-header'>

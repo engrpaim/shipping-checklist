@@ -206,9 +206,9 @@ const RemoveLogo = ({width = 100, height = 80, className = "" }) =>(
 );
 
 const ExcelFileSvg = ({message,size}) =>(
-    <svg width="280" height="80" viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg">
+<svg width="400" height="80" viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg">
 
-  <rect width="280" height="80" rx="8" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="1"/>
+  <rect width="400" height="80" rx="8" fill="#F9FAFB" stroke="#E5E7EB" strokeWidth="1"/>
 
 
   <g transform="translate(16, 16)">
