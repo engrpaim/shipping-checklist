@@ -257,6 +257,29 @@ const ExcelFileSvg = ({message,size}) =>(
 
 </svg>
 );
+
+const Nodata = ({})=>(
+
+<svg width="400" height="300" viewBox="0 0 300 200" xmlns="http://www.w3.org/2000/svg">
+
+  <circle cx="150" cy="100" r="80" fill="#f0f9ff" opacity="0.5"/>
+  <circle cx="150" cy="100" r="60" fill="#dbeafe" opacity="0.3"/>
+
+
+  <rect x="100" y="70" width="100" height="60" rx="8" fill="none" stroke="#60a5fa" stroke-width="2"/>
+  <path d="M120 70 L120 60 Q120 55 125 55 L175 55 Q180 55 180 60 L180 70" fill="none" stroke="#60a5fa" stroke-width="2"/>
+
+  <circle cx="80" cy="50" r="3" fill="#f59e0b" opacity="0.8"/>
+  <circle cx="220" cy="40" r="2" fill="#ef4444" opacity="0.8"/>
+  <circle cx="250" cy="80" r="2.5" fill="#10b981" opacity="0.8"/>
+  <circle cx="50" cy="120" r="2" fill="#8b5cf6" opacity="0.8"/>
+
+
+  <text x="150" y="160" text-anchor="middle" fill="#64748b" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="500">No Data Available</text>
+
+
+</svg>
+);
 export {
   CrateShippingLogo,
   PickupDateLogo,
@@ -269,4 +292,5 @@ export {
   BookLogo,
   RemoveLogo,
    ExcelFileSvg ,
+   Nodata,
 };

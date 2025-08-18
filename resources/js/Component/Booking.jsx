@@ -3,14 +3,14 @@
  *
  */
 
-import React, { useEffect, useState ,useRef} from 'react';
+import React, { useEffect, useState ,useRef, useReducer} from 'react';
 import * as XLSX from 'xlsx';
 import '../../css/booking.css';
-import {PickupDateLogo , DestinationLogo , TotalPalletLogo , ContainerLogo,BookLogo , RemoveLogo,  ExcelFileSvg } from '../SVG/ShippingLogos';
+import {PickupDateLogo , DestinationLogo , TotalPalletLogo , ContainerLogo,BookLogo , RemoveLogo,  ExcelFileSvg,Nodata } from '../SVG/ShippingLogos';
 export default function Booking() {
+    /*UseRef*/
     const firstHold = useRef(false);
     const sameContainerHold = useRef(false);
-    const containerRef = useRef(false);
     const displayData = useRef({});
     const currentKey = useRef(0);
     const forwarder= useRef(null);
@@ -20,6 +20,7 @@ export default function Booking() {
     const currentEnd = useRef(false);
     const currentType = useRef(false);
     const holdBoth = useRef(false);
+    const [currentCount,setCurrentCount] = useState(null);
 
     /*Track State*/
     const [excelData, setExcelData] = useState(null);
@@ -28,7 +29,10 @@ export default function Booking() {
     const [fileSource , setFileSource] =useState(null);
     const [sizeIdentifier , setSizeIdentifier] = useState(null);
     const [displayDataState, setDisplayDataState] = useState({});
-     /*Manipulate Excel file data*/
+    const [displaError , setDisplayError] = useState({});
+    const [isDragging, setIsDragging] = useState(false);
+
+    /*Detect file upload*/
     const handleFileChange = (e) => {
 
         const file = e.target.files[0];
@@ -37,7 +41,6 @@ export default function Booking() {
         const reader = new FileReader();
         setSizeIdentifier(fileSizeInKB);
         reader.onload = (event) => {
-            const fullPath = e.target.value;
             const data = new Uint8Array(event.target.result);
             const workbook = XLSX.read(data, { type: 'array' });
 
@@ -69,24 +72,27 @@ export default function Booking() {
             });
 
             const cleanedData = jsonData.map(row => {
-            const newRow = {};
-            Object.entries(row).forEach(([key, value]) => {
-                const newKey = key.replace(/\s+/g, '_') .replace(/\./g, '1').replace(/\(/g, '2').replace(/\)/g, '3');  // replace spaces with _
-                newRow[newKey] = value;
-            });
-            return newRow;
+                const newRow = {};
+                Object.entries(row).forEach(([key, value]) => {
+                    const newKey = key.replace(/\s+/g, '_')
+                                    .replace(/\./g, '1').replace(/\(/g, '2')
+                                    .replace(/\)/g, '3');
+                    newRow[newKey] = value;
+                });
+                return newRow;
             });
 
-            setFileSource(fullPath.split('\\').pop());
+            setFileSource(file.name);
             setExcelData(cleanedData);
         };
 
         reader.readAsArrayBuffer(file);
+        e.target.value = null;
     };
-    // console.log(excelData);\
 
-    /*Detect Excel data and manipulate data*/
-    function excelDateToJSDate(serial) {
+    /*Convert excel date to date*/
+    function excelDateToJSDate(serial)
+    {
         const excelEpochOffset = 25569;
         const utcMillis = (serial - excelEpochOffset) * 86400 * 1000;
         const date = new Date(utcMillis);
@@ -98,22 +104,79 @@ export default function Booking() {
             day: 'numeric',
         });
     }
-
-    function excelTimeToHHMM(decimal) {
+    /*Convert excel time to time*/
+    function excelTimeToHHMM(decimal)
+    {
         const totalMinutes = Math.round(decimal * 24 * 60);
         const hours = Math.floor(totalMinutes / 60);
         const minutes = totalMinutes % 60;
-
-        // Pad minutes to 2 digits
         return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
     }
 
-    function getValidQuantity(index) {
-                            const data = excelData[index];
-                            console.log(data.QUANTITY);
-                            const quantity = data && data.QUANTITY;
-                            return (quantity !== 'QUANTITY' && quantity !== '?' && quantity > 0) ? quantity : false;
-                        }
+    function getValidQuantity(index)
+    {
+        const data = excelData[index];
+        const quantity = data && data.QUANTITY;
+        return (quantity !== 'QUANTITY' && quantity !== '?' && quantity > 0) ? quantity : false;
+    }
+
+    function getTypeFilter(index)
+    {
+        const type = excelData[index] !== undefined ? excelData[index].AAATYPE.split(";") : null;
+        if(!type) return;
+        return type[0] ? type[0] : null;
+    }
+
+    function destinationHandle (destination,excelData,currentStart)
+    {
+        if(!excelData[currentStart]) return;
+        const destinationCurrent = excelData[currentStart].DESTINATION  !== undefined && excelData[currentStart].DESTINATION !== '?'?  excelData[currentStart].DESTINATION: destination.current;
+        if(! destinationCurrent)return;
+        destination.current = destinationCurrent;
+        return destinationCurrent  ? destinationCurrent :  null;
+    }
+
+    function getDate(index){
+        if(!excelData[index])return null;
+        const date = excelData[index].PICK_UP_DATE ?  excelData[index].PICK_UP_DATE : null;
+        const newData = excelDateToJSDate(date);
+        return newData;
+    }
+
+    function getTime(index){
+        if(!excelData[index])return null;
+        const time = excelData[index].PICK_UP_TIME ? excelData[index].PICK_UP_TIME :null;
+        const newTime = excelTimeToHHMM(time);
+        return newTime;
+    }
+
+    function updateDataSet({currentStart,key,currentEnd,forwarder,destination}){
+          displayData.current[currentStart.current] = {
+                                                        ...displayData.current[Number(key)],
+                                                        'START': currentStart.current,
+                                                        'END': currentEnd.current,
+                                                        'CONTAINER':   currentStart.current ? getTypeFilter(currentStart.current): 'CONTAINER NOT FOUND',
+                                                        'FORWARDER': forwarder.current ? forwarder.current: 'NOT FOUND',
+                                                        'DESTINATION':  destinationHandle (destination,excelData,currentStart.current),
+                                                        'PICK_UP': getDate(currentStart.current),
+                                                        'PICK_TIME':getTime(currentStart.current),
+
+                                                      };
+    }
+
+    function updateDataSetSpecial({currentStart,key,keyEnd,forwarder,destination,i}){
+          displayData.current[key] = {
+                                        ...displayData.current[key],
+                                        'START': i,
+                                        'END':keyEnd,
+                                        'CONTAINER':   currentStart.current ? getTypeFilter(currentStart.current): 'CONTAINER NOT FOUND',
+                                        'FORWARDER': forwarder.current ? forwarder.current: 'NOT FOUND',
+                                        'DESTINATION':  destinationHandle (destination,excelData,currentStart.current),
+                                        'PICK_UP': getDate(currentStart.current),
+                                        'PICK_TIME':getTime(currentStart.current),
+                                    };
+
+    }
 
     function setDetails(key,value){
                     /**
@@ -124,28 +187,22 @@ export default function Booking() {
 
                     //Get Forwarder
 
-
-                    //console.log(forwarder.current + " ------- " + value.AAMODE);
-                    let keyDynamic;
-                    let endKeys;
-                    let pickUpDate;
-                    let pickUpTime;
+                    if (value.AAATYPE === undefined && value.DESTINATION === undefined)return;
 
                     if( value.AAMODEL !== '?'&& forwarder.current !==  value.AAMODEL && value.BINVOICE_NO === '?' && !sameContainerHold.current){
+
                         forwarder.current= value.AAMODEL;
-                        console.log("----FORWARDER: "+forwarder.current + " ------- VALUE: " + value.AAMODEL + "---- IN KEY: " + key);
                     }
 
-                    if(!currentEnd.current && !currentStart.current  && !firstHold.current && value.AAATYPE !== '?' && value.ANO_PALLETS !== '?' && value.BINVOICE_NO !== '?' && value.AAATYPE !== 'TYPE' && !sameContainerHold.current && (value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL"))){
+                    if(!currentEnd.current && !currentStart.current  && !firstHold.current && value.AAATYPE !== '?' && value.ANO_PALLETS !== '?' && value.BINVOICE_NO !== '?' && typeof value.AAATYPE === 'string'&&value.AAATYPE !== 'TYPE' && !sameContainerHold.current && (value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL"))){
 
                         currentStart.current = Number(key);
-                        console.log( "----- DATA START: " , currentStart.current);
                         firstHold.current = true;
                         currentType.current = value.AAATYPE;
 
                     }
 
-                    if(!currentEnd.current && currentStart.current && firstHold.current && value.AAATYPE !== '?' &&  currentStart.current !== Number(key)&& !sameContainerHold.current ){
+                    if(!currentEnd.current && currentStart.current && firstHold.current && typeof value.AAATYPE !== 'number' && value.AAATYPE !== '?' &&  currentStart.current !== Number(key)&& !sameContainerHold.current ){
 
                         if(value.AAMODEL === 'MODEL' && currentStart.current !== Number(key) ){
                             currentEnd.current = Number(key) - 2;
@@ -154,81 +211,52 @@ export default function Booking() {
                         }
 
                         if(currentEnd.current && value.AAATYPE !== "?"){
-                            console.log( "----- DATA END: " , currentEnd.current, "KEY ", Number(key), " VALUE", value.AAATYPE);
-                            displayData.current[currentStart.current] = {
-                                                                ...displayData.current[Number(key)],
-                                                                'START': currentStart.current ? currentStart.current: '?',
-                                                                'END': currentEnd.current ? currentEnd.current: '?',
-                                                                'CONTAINER': 'NOT FOUND',
-                                                                'FORWARDER': 'INVALID',
-                                                                'DESTINATION': 'NOT FOUND',
-                                                                'PICK_UP': 'INVALID',
-                                                                'PICK_TIME':'INVALID',
-
-                            };
-
-                            // currentStart.current = null;
-                            // currentEnd.current = null;
-                            // firstHold.current = false;
-                            // holdBoth.current = false;
-
+                            const newStartKey = Number(key);
+                            updateDataSet({currentStart , newStartKey,currentEnd , forwarder,destination})
                         }
 
-                         //console.log( "-----HOLD END : " , currentEnd.current);
+
                     }
 
                     if(currentEnd.current && !holdBoth.current){
-                        holdBoth.current = true;//Hold if strat and end is set
-                        console.log('Evaluate Current Row------', key);
-                        //Detect if same forwarder
+
+                        holdBoth.current = true;
+
                         if(value.AAATYPE !== '?' && value.AAMODEL !== '?'){
 
-                            console.log('PASSED CONDITION');
+
                             let checkOneUp = Number(key) + 1;
                             let checkTwoUp = Number(key) + 2;
-                            // console.log('CURRENT POSITION:',excelData[currentStart.current] && excelData[currentStart.current ].QUANTITY ?excelData[ currentStart.current].QUANTITY: null);
-                            // console.log('CHECK UP 1: ',excelData[checkOneUp] && excelData[checkOneUp].QUANTITY ?excelData[checkOneUp].QUANTITY: null);
-                            // console.log('CHECK UP 2: ',excelData[checkTwoUp] && excelData[checkTwoUp].QUANTITY? excelData[checkTwoUp].QUANTITY:null);
 
                             let currentCheck = getValidQuantity(Number(key));
                             let checkOneUpQty = getValidQuantity(checkOneUp);
                             let checkTwoUpQty = getValidQuantity(checkTwoUp);
 
                             if (currentCheck) {
-                                 console.log("Current: ",excelData[ currentStart.current].QUANTITY, "Key: ",key);
                                  currentStart.current = Number(key);
+                                 currentType.current = excelData[Number(key)].AAATYPE;
                             }else if (checkOneUpQty) {
-                                 console.log("One up: ",excelData[checkOneUp].QUANTITY,"Key: ",key," --->",Number(key) + 1);
                                  currentStart.current = Number(key) + 1 ;
+                                 currentType.current = excelData[currentStart.current].AAATYPE;
                             }else if (checkTwoUpQty) {
-                                console.log("Two up: ",excelData[checkTwoUp].QUANTITY,"Key: ",key," --->",Number(key) + 2);
                                 currentStart.current = Number(key) + 2 ;
+                                currentType.current = excelData[currentStart.current].AAATYPE;
                             }
                             sameContainerHold.current = true;
                             currentEnd.current =false;
                             holdBoth.current = false;
+
                         }
 
-                          console.log('START SAME FORWADER DIFFERENT CONTAINER -->',currentStart.current,'---------',key,'------>',value.QUANTITY) ;
+
                     }
 
 
 
                     if(!currentEnd.current && currentStart.current && firstHold.current && value.AAATYPE === '?' && value.QUANTITY === '?' &&  currentStart.current !== Number(key) && sameContainerHold.current ){
                         currentEnd.current = Number(key) - 1;
-                        console.log('END SAME FORWADER DIFFERENT CONTAINER -->',currentEnd.current);
-                        displayData.current[currentStart.current] = {
-                                                                ...displayData.current[currentStart.current],
-                                                                'START': currentStart.current ? currentStart.current: '?',
-                                                                'END': currentEnd.current ? currentEnd.current: '?',
-                                                                'CONTAINER': 'NOT FOUND',
-                                                                'FORWARDER': 'INVALID',
-                                                                'DESTINATION': 'NOT FOUND',
-                                                                'PICK_UP': 'INVALID',
-                                                                'PICK_TIME':'INVALID',
-
-                        };
-                        console.log('-------------------------RESET-------------------------------------');
+                        const setAsKey  = currentStart.current;
+                        updateDataSet({currentStart , setAsKey,currentEnd , forwarder,destination});
                         sameContainerHold.current = false;
                         currentStart.current = false;
                         currentEnd.current = false;
@@ -237,70 +265,70 @@ export default function Booking() {
                         forwarder.current = false;
                     }
 
-                      if(sameContainerHold.current && ( value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL") ) && value.QUANTITY !== 'QUANTITY' &&  value.QUANTITY !== '?' ){
+                      if(sameContainerHold.current && typeof value.AAATYPE !== 'number'  && ( value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL") ) && value.QUANTITY !== 'QUANTITY' &&  value.QUANTITY !== '?' ){
                         if(key > currentStart.current){
-                            console.log('STEP DOWN 1 ARRAY END: ' ,key - 1);
                             currentEnd.current = Number(key) - 1;
-                            displayData.current[currentStart.current] = {
-                                                                ...displayData.current[currentStart.current],
-                                                                'START': currentStart.current ? currentStart.current: '?',
-                                                                'END': currentEnd.current ? currentEnd.current: '?',
-                                                                'CONTAINER': 'NOT FOUND',
-                                                                'FORWARDER': 'INVALID',
-                                                                'DESTINATION': 'NOT FOUND',
-                                                                'PICK_UP': 'INVALID',
-                                                                'PICK_TIME':'INVALID',
-
-                            };
-                            console.log('ARRAY START: ' ,key);
+                            const setAsKey  = currentStart.current;
+                            updateDataSet({currentStart , setAsKey,currentEnd , forwarder,destination});
                             currentStart.current = Number(key);
                         }
                     }
 
                     if(Number(key) == excelData.length - 1 ) {
-                        console.log('see START: ' ,Number(key) == excelData.length - 1 ) ;
                         for (let i = excelData.length - 1 ; i  > currentStart.current ; i--){
                             if(excelData[i].QUANTITY !== '?' && excelData[i].QUANTITY !== 'QUANTITY'){
-                                    currentEnd.current = i;
-
-                                    displayData.current[i] = {
-                                                                    ...displayData.current[currentStart.current],
-                                                                    'START': currentStart.current ? currentStart.current: '?',
-                                                                    'END': currentEnd.current ? currentEnd.current: '?',
-                                                                    'CONTAINER': 'NOT FOUND',
-                                                                    'FORWARDER': 'INVALID',
-                                                                    'DESTINATION': 'NOT FOUND',
-                                                                    'PICK_UP': 'INVALID',
-                                                                    'PICK_TIME':'INVALID',
-
-                                    };
+                                    const setAsEndkey =  currentEnd.current = i;
+                                    const setAsKey  = currentStart.current;
+                                    updateDataSetSpecial({currentStart,setAsKey,setAsEndkey,forwarder,destination,i})
                             }
                         }
 
                         if(!currentEnd.current < currentEnd.current ){
-                               currentEnd.current = currentStart.current;
-
-                                displayData.current[currentStart.current] = {
-                                                                ...displayData.current[currentStart.current],
-                                                                'START': currentStart.current ? currentStart.current: '?',
-                                                                'END': currentStart.current? currentStart.current: '?',
-                                                                'CONTAINER': 'NOT FOUND',
-                                                                'FORWARDER': 'INVALID',
-                                                                'DESTINATION': 'NOT FOUND',
-                                                                'PICK_UP': 'INVALID',
-                                                                'PICK_TIME':'INVALID',
-
-                                };
+                                currentEnd.current = currentStart.current;
+                                const setAsKey  = currentStart.current;
+                                updateDataSet({currentStart , setAsKey,currentEnd , forwarder,destination});
                         }
                     }
     }
 
-    console.log(displayData.current);
-    console.log(excelData);
+
+    /*Handle file*/
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = () => {
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file) {
+            handleFileChange({ target: { files: [file] } });
+        }
+    };
+    /*Buttons functions*/
+    const bookedData = (e) => {
+
+        console.log(e.currentTarget.value);
+        console.log(excelData);
+        console.log(displayData.current);
+    };
+
+    const removeBooked = (e) => {
+        const indexKey = Number(e.currentTarget.value.split("_")[0]);
+        setDisplayDataState(prev => {
+            const newData = { ...prev };
+            delete newData[indexKey];
+            return newData;
+        });
+
+    };
 
     useEffect(() => {
-
-
 
         if (!excelData || excelData.length === 0) return;
 
@@ -308,22 +336,26 @@ export default function Booking() {
         firstHold.current = false;
         currentKey.current = 0;
         forwarder.current = null;
+        sameContainerHold.current = false;
+        currentStart.current = false;
+        currentEnd.current = false;
+        firstHold.current = false;
+        holdBoth.current = false;
+        forwarder.current = false
         setFirstData(null);
-
-
+        setDisplayDataState(null);
 
         Object.entries(excelData).forEach(([key ,value])=>{
             setDetails(key,value);
         });
-
-
 
         Object.entries(displayData.current).forEach(([key])=>{
             const start = displayData.current[key].START;
             const end = displayData.current[key].END;
              let total = 0;
                 const mapped =Array.from({ length:  end + 1  },(_, i) =>{
-                    const numberOfPalllets = excelData[i].ANO_PALLETS;
+                    if(!excelData[i])return;
+                    const numberOfPalllets = excelData[i].ANO_PALLETS !== undefined  ? excelData[i].ANO_PALLETS : null;
                     if(numberOfPalllets){
                         if(typeof(numberOfPalllets) !== 'string' && i >= start && i <= end){
                             total += numberOfPalllets;
@@ -340,8 +372,17 @@ export default function Booking() {
             );
         });
 
-         setDisplayDataState({ ...displayData.current });
+        Object.entries(displayData.current).forEach(([key , value])=>{
 
+            if(key === 'undefined' || key === 'false'){
+
+                 delete displayData.current[key];
+            }
+        });
+        setDisplayDataState({ ...displayData.current });
+
+
+        setDisplayError(Object.keys(displayData.current).length);
 
 
     },[excelData]);
@@ -350,42 +391,16 @@ export default function Booking() {
         setTotalPalletDetect(totalPallet.current);
     },[totalPallet.current]);
 
-    /*output*/
-
-    const [isDragging, setIsDragging] = useState(false);
-
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        setIsDragging(true);
-    };
-
-    const handleDragLeave = () => {
-        setIsDragging(false);
-    };
-
-    const handleDrop = (e) => {
-        e.preventDefault();
-        setIsDragging(false);
-        const file = e.dataTransfer.files[0];
-        if (file) {
-            handleFileChange({ target: { files: [file] } }); // Mimic input change
+    useEffect(()=>{
+        setCurrentCount(Object.entries(displayDataState).length);
+        if(currentCount === 1){
+            console.log(currentCount);
+            setCurrentCount(null);
+            setFileSource(null);
+            setExcelData(null);
         }
-    };
+    },[displayDataState]);
 
-    const bookedData = (e) => {
-
-        console.log(e.currentTarget.value);
-        console.log(excelData);
-        console.log(displayData.current);
-    };
-
-     const removeBooked = (e) => {
-
-        console.log(e.currentTarget.value);
-
-    };
-
-    console.log(displayData.current);
     return (
         <div className='booking-compile'>
 
@@ -411,6 +426,7 @@ export default function Booking() {
 
             {excelData && excelData.length > 0 &&(
 
+
                 Object.entries(displayDataState).flatMap(([key1, value1]) =>
                 {
 
@@ -420,26 +436,26 @@ export default function Booking() {
                         const buttonContainer =String(value1.CONTAINER).replace(/ /g,"_");
 
                         const rows = Array.from({ length: value1.END - value1.START + 1 },(_, idx) => {
-                            const i = value1.START + idx;
+                        const i = value1.START + idx;
 
-                            const row = excelData[i];
-                            if (!row) return null;
-                            const rawCarton = Number(row?.NO_OF_CARTON);
-                            const carton = isNaN(rawCarton) ? '?' : Math.round(rawCarton);
-                            const replaceSpace =String(value1.CONTAINER).replace(/ /g,"_");
+                        const row = excelData[i];
+                        if (!row) return null;
+                        const rawCarton = Number(row?.NO_OF_CARTON);
+                        const carton = isNaN(rawCarton) ? '?' : Math.round(rawCarton);
+                        const replaceSpace =String(value1.CONTAINER).replace(/ /g,"_");
 
-                            return (
-                                <tr key={`${key1}-${i}`} id={`${replaceSpace}_${i}`}>
-                                    <td id={`model_${i}`} >{row.AAMODEL}</td>
-                                    <td id={`quantity_${i}`}>{row.QUANTITY}</td>
-                                    <td id={`invoice_${i}`}>{row.BINVOICE_NO}</td>
-                                    <td id={`precarton_${i}`}>{row.QUANTITY_PER_CARTON}</td>
-                                    <td id={`carton_${i}`}>{carton}</td>
-                                    <td id={`palletw_${i}`}>{row.PALLET_WIDTH}</td>
-                                    <td id={`palletno_${i}`}>{row.ANO_PALLETS }</td>
-                                    <td id={`area_${i}`}>{row.PLANT_AREA}</td>
-                                </tr>
-                            );}).filter(Boolean);
+                        return (
+                            <tr key={`${key1}-${i}`} id={`${replaceSpace}_${i}`}>
+                                <td id={`model_${i}`} >{row.AAMODEL}</td>
+                                <td id={`quantity_${i}`}>{row.QUANTITY}</td>
+                                <td id={`invoice_${i}`}>{row.BINVOICE_NO}</td>
+                                <td id={`precarton_${i}`}>{row.QUANTITY_PER_CARTON}</td>
+                                <td id={`carton_${i}`}>{carton}</td>
+                                <td id={`palletw_${i}`}>{row.PALLET_WIDTH}</td>
+                                <td id={`palletno_${i}`}>{row.ANO_PALLETS }</td>
+                                <td id={`area_${i}`}>{row.PLANT_AREA}</td>
+                            </tr>
+                        );}).filter(Boolean);
 
                         return (
                                 <React.Fragment key={key1}>
@@ -499,6 +515,21 @@ export default function Booking() {
 
                 })
 
+            )}
+
+            { currentCount === null &&(
+
+                       <Nodata/>
+
+            )}
+
+            {displaError <= 0 && (
+                console.log(displaError),
+                <div className='error-display'>
+                    <div className='error-header'>
+                        <h1>Invalid Format: <strong>{fileSource}</strong></h1>
+                    </div>
+                </div>
             )}
 
 
