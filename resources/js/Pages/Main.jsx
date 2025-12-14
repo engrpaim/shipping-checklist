@@ -1,29 +1,22 @@
 import React from 'react';
-import { Head } from '@inertiajs/react';
+import { Head , router, usePage } from '@inertiajs/react';
 import MainLayout from '../Layout/MainLayout';
-import Booking from '../Component/Booking';
-
+import Booking from '../Layout/Booking';
+import Home from './Home';
 import '../../css/app.css';
+import { useApp } from "../Context/AppContext";
 
 export default function Main() {
-    const agent = navigator.userAgent;
-    const currentUrl = window.location.pathname.split('/').filter(Boolean).pop() || 'home';
-    const cpitalizedFirstLetter =currentUrl.charAt(0).toUpperCase()+currentUrl.slice(1);
-
-    let content ;
-
-    if(currentUrl.toLowerCase() == 'booking' ){
-        content = <Booking/>;
-    }
+    const {ip} = useApp();
+    const {name} =useApp();
+    const {idNumber} = useApp();
+    const { url } = usePage();
+    console.log(ip,name,idNumber,url);
 
     return(
         <>
-            <Head title={cpitalizedFirstLetter}/>
-            <MainLayout>
-                <div className='children-container'>
-                    {content}
-                </div>
-            </MainLayout>
+            <Head title='Home'/>
+            <Home/>
         </>
     );
 }

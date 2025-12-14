@@ -1,0 +1,291 @@
+const file = e.target.files[0];
+  if (!file) return;
+
+    try {
+        const fileSizeInKB = (file.size / 1024).toFixed(2);
+        setSizeIdentifier(fileSizeInKB);
+
+
+        const arrayBuffer = await file.arrayBuffer();
+        const data = new Uint8Array(arrayBuffer);
+        const workbook = XLSX.read(data, { type: 'array' });
+
+        const sheetName = workbook.SheetNames[0];
+        const worksheet = workbook.Sheets[sheetName];
+
+        const customHeaders = [
+        "AAMODEL", "QUANTITY", "BINVOICE_NO", "INVOICE_DATE", "SHIP_TO",
+        "DESTINATION", "AAATYPE", "PICK_UP_DATE", "PICK_UP_TIME",
+        "QUANTITY_PER_CARTON", "NO_OF_CARTON", "PALLET_WIDTH", "ANO_PALLETS",
+        "TOTAL_PALLET", "PLANT_AREA", "TOTAL_PALLET_MAIN",
+        "TOTAL_PALLET_P7", "TOTAL_PALLET_P8"
+        ];
+
+        const jsonData = XLSX.utils.sheet_to_json(worksheet, {
+        header: customHeaders,
+        defval: '?',
+        });
+
+        const cleanedData = jsonData.map(row => {
+        const newRow = {};
+        for (const [key, value] of Object.entries(row)) {
+            const newKey = key
+            .replace(/\s+/g, '_')
+            .replace(/\./g, '1')
+            .replace(/\(/g, '2')
+            .replace(/\)/g, '3');
+            newRow[newKey] = value;
+        }
+        return newRow;
+        });
+
+        const hashBuffer = await window.crypto.subtle.digest('SHA-256', arrayBuffer);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+
+        setFileSource(file.name);
+        setExcelData(cleanedData);
+        setFileHash(hexHash);
+
+        console.log('✅ File hash:', hexHash);
+    } catch (error) {
+        console.error('❌ Error handling file:', error);
+        setFileHash('Error calculating hash.');
+    }
+
+    // Allow re-uploading same file
+    e.target.value = null;
+    };
+
+    console.log(fileHash);
+    /*Convert excel date to date*/
+    function excelDateToJSDate(serial)
+    {
+        const excelEpochOffset = 25569;
+        const utcMillis = (serial - excelEpochOffset) * 86400 * 1000;
+        const date = new Date(utcMillis);
+
+        return date.toLocaleDateString('en-GB', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    }
+    /*Convert excel time to time*/
+    function excelTimeToHHMM(decimal)
+    {
+        const totalMinutes = Math.round(decimal * 24 * 60);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+        return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
+    }
+
+    function getValidQuantity(index)
+    {
+        const data = excelData[index];
+        const quantity = data && data.QUANTITY;
+        return (quantity !== 'QUANTITY' && quantity !== '?' && quantity > 0) ? quantity : false;
+    }
+
+    function getTypeFilter(index)
+    {
+        const type = excelData[index] !== undefined ? excelData[index].AAATYPE.split(";") : null;
+        if(!type) return;
+        return type[0] ? type[0] : null;
+    }
+
+    function destinationHandle (destination,excelData,currentStart)
+    {
+        if(!excelData[currentStart]) return;
+        const destinationCurrent = excelData[currentStart].DESTINATION  !== undefined && excelData[currentStart].DESTINATION !== '?'?  excelData[currentStart].DESTINATION: destination.current;
+        if(! destinationCurrent)return;
+        destination.current = destinationCurrent;
+        return destinationCurrent  ? destinationCurrent :  null;
+    }
+
+    function getDate(index){
+        if(!excelData[index])return null;
+        const date = excelData[index].PICK_UP_DATE ?  excelData[index].PICK_UP_DATE : null;
+        const newData = excelDateToJSDate(date);
+        return newData;
+    }
+
+    function getTime(index){
+        if(!excelData[index])return null;
+        const time = excelData[index].PICK_UP_TIME ? excelData[index].PICK_UP_TIME :null;
+        const newTime = excelTimeToHHMM(time);
+        return newTime;
+    }
+
+    function updateDataSet({currentStart,key,currentEnd,forwarder,destination}){
+          displayData.current[currentStart.current] = {
+                                                        ...displayData.current[Number(key)],
+                                                        'START': currentStart.current,
+                                                        'END': currentEnd.current,
+                                                        'CONTAINER':   currentStart.current ? getTypeFilter(currentStart.current): 'CONTAINER NOT FOUND',
+                                                        'FORWARDER': forwarder.current ? forwarder.current: 'NOT FOUND',
+                                                        'DESTINATION':  destinationHandle (destination,excelData,currentStart.current),
+                                                        'PICK_UP': getDate(currentStart.current),
+                                                        'PICK_TIME':getTime(currentStart.current),
+
+                                                      };
+    }
+
+    function updateDataSetSpecial(key,keyEnd,forwarder,destination){
+        console.log('CHECK 2 ',key);
+          displayData.current[key] = {
+                                        ...displayData.current[key],
+                                        'START': key,
+                                        'END':keyEnd,
+                                        'CONTAINER':   key? getTypeFilter(key): 'CONTAINER NOT FOUND',
+                                        'FORWARDER': forwarder.current ? forwarder.current: 'NOT FOUND',
+                                        'DESTINATION':  destinationHandle (destination,excelData,currentStart.current),
+                                        'PICK_UP': getDate(key),
+                                        'PICK_TIME':getTime(key),
+                                    };
+
+    }
+       function getForwarder( end ){
+            console.log('FUNCTION FORWARDER: ', excelData[end+1].AAMODEL);
+             if(excelData[end+1].AAMODEL !== 'MODEL' && excelData[end+1].AAMODEL !=='?' && excelData[end+1].QUANTITY === '?'){
+                                 console.log('CHECKING NEW FORWARDER ',excelData[end+1].AAMODEL);
+                                return excelData[end+1].AAMODEL;
+                            }
+    }
+    function setDetails(key,value){
+                    /**
+                    *
+                    * @returns Set of arrays per container
+                    *
+                    */
+
+                    //Get Forwarder
+
+                    if (value.AAATYPE === undefined && value.DESTINATION === undefined)return;
+
+                    if( value.AAMODEL !== '?'&& forwarder.current !==  value.AAMODEL && value.BINVOICE_NO === '?' && !sameContainerHold.current  &&  compareForwarder.current === null){
+                        console.log('FORWARDER ',key ,compareForwarder.current );
+                        compareForwarder.current = value.AAMODEL;
+                        forwarder.current = value.AAMODEL;
+                    }
+                    console.log(forwarder.current + ' CHECCK');
+                     if( forwarder.current === compareForwarder.current && forwarder.current !== undefined || !forwarder.current &&  value.AAMODEL){
+                        console.log('CURRENT FORWARDER: ',forwarder.current);
+                        forwarder.current = value.AAMODEL;
+                    }
+                      if( forwarder.current !== compareForwarder.current &&  compareForwarder.current !== undefined){
+                        console.log('FORWARDER NOT EQUAL: ', compareForwarder.current);
+                        forwarder.current = compareForwarder.current;
+                    }
+                    if(!currentEnd.current && !currentStart.current  && !firstHold.current && value.AAATYPE !== '?' && value.ANO_PALLETS !== '?' && value.BINVOICE_NO !== '?' && typeof value.AAATYPE === 'string'&&value.AAATYPE !== 'TYPE' && !sameContainerHold.current && (value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL"))){
+
+                        currentStart.current = Number(key);
+                        firstHold.current = true;
+                        currentType.current = value.AAATYPE;
+
+                    }
+
+                    if(!currentEnd.current && currentStart.current && firstHold.current && typeof value.AAATYPE !== 'number' && value.AAATYPE !== '?' &&  currentStart.current !== Number(key)&& !sameContainerHold.current ){
+
+                        if(value.AAMODEL === 'MODEL' && currentStart.current !== Number(key) ){
+                            currentEnd.current = Number(key) - 2;
+                        }else if (value.AAMODEL !== 'MODEL' && currentStart.current !== Number(key)){
+                            currentEnd.current = Number(key) - 1;
+                        }
+
+                        if(currentEnd.current && value.AAATYPE !== "?"){
+                            const newStartKey = Number(key);
+                            console.log('START CHECK 2',key);
+                            compareForwarder.current = getForwarder(currentEnd.current);
+                            updateDataSet({currentStart , newStartKey,currentEnd , forwarder,destination})
+                        }
+
+
+                    }
+
+                    if(currentEnd.current && !holdBoth.current){
+
+                        holdBoth.current = true;
+
+                        if(value.AAATYPE !== '?' && value.AAMODEL !== '?'){
+
+
+                            let checkOneUp = Number(key) + 1;
+                            let checkTwoUp = Number(key) + 2;
+                            let currentCheck = getValidQuantity(Number(key));
+                            let checkOneUpQty = getValidQuantity(checkOneUp);
+                            let checkTwoUpQty = getValidQuantity(checkTwoUp);
+                            console.log(Number(key));
+                            if (currentCheck) {
+                                currentStart.current = Number(key);
+                                currentType.current = excelData[Number(key)].AAATYPE;
+                            }else if (checkOneUpQty) {
+                                currentStart.current = Number(key) + 1 ;
+                                currentType.current = excelData[currentStart.current].AAATYPE;
+                            }else if (checkTwoUpQty) {
+                                currentStart.current = Number(key) + 2 ;
+                                currentType.current = excelData[currentStart.current].AAATYPE;
+                            }
+                            sameContainerHold.current = true;
+                            currentEnd.current =false;
+                            holdBoth.current = false;
+
+                        }
+
+
+                    }
+
+
+
+                    if(!currentEnd.current && currentStart.current && firstHold.current && value.AAATYPE === '?' && value.QUANTITY === '?' &&  currentStart.current !== Number(key) && sameContainerHold.current ){
+                        console.log('START CHECK 1',key);
+                        console.log(  getForwarder(Number(key)-1));
+
+                        currentEnd.current = Number(key) - 1;
+                        compareForwarder.current = getForwarder(currentEnd.current);
+                        const setAsKey  = currentStart.current;
+                        updateDataSet({currentStart , setAsKey,currentEnd , forwarder,destination});
+                        sameContainerHold.current = false;
+                        currentStart.current = false;
+                        currentEnd.current = false;
+                        firstHold.current = false;
+                        holdBoth.current = false;
+                        forwarder.current = false;
+                    }
+
+                      if(sameContainerHold.current && typeof value.AAATYPE !== 'number'  && ( value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL") ) && value.QUANTITY !== 'QUANTITY' &&  value.QUANTITY !== '?' ){
+                        if(key > currentStart.current){
+
+                            console.log('END: ' , excelData[Number(key)].AAATYPE,key);
+                            for(let i = 1; i < 10; i++){
+                                if(typeof excelData[Number(key)-i].QUANTITY === 'number'){
+                                     console.log('DIFFERECE TO END ' , i , 'KEY ', Number(key)-i);
+                                     currentEnd.current = Number(key)-i;
+                                     break;
+                                }
+                            }
+
+                            compareForwarder.current = getForwarder(currentEnd.current);
+
+                            const setAsKey  = currentStart.current;
+                            updateDataSet({currentStart , setAsKey,currentEnd , forwarder,destination});
+                            currentStart.current = Number(key);
+                            console.log('NEXT START: ' ,Number(key)+1);
+                        }
+                    }
+
+                    if(Number(key) == excelData.length - 1 ) {
+
+                        for (let i = excelData.length - 1 ; i  > currentStart.current ; i--){
+                            if(typeof excelData[Number(key) - i].QUANTITY === 'number'){
+                                    const setAsEndkey = i;
+                                    const setAsKey  =  currentStart.current;
+                                    //function updateDataSetSpecial({currentStart,key,keyEnd,forwarder,destination})
+                                    console.log('CHECK: ' ,Number(key) , 'NUMBER OF ROTATION ',i , 'START ',setAsKey,' END ',setAsEndkey, 'DESTINATION ',destination.current,'FORWARDER ',forwarder.current);
+                                    updateDataSetSpecial(setAsKey,setAsEndkey,forwarder,destination)
+                                    break;
+                            }
+                        }
+                    }

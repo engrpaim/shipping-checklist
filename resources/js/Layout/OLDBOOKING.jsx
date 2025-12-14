@@ -4,6 +4,7 @@
  */
 
 import React, { useEffect, useState ,useRef, useReducer} from 'react';
+import { router } from '@inertiajs/react';
 import * as XLSX from 'xlsx';
 import '../../css/booking.css';
 import {PickupDateLogo , DestinationLogo , TotalPalletLogo , ContainerLogo,BookLogo , RemoveLogo,  ExcelFileSvg,Nodata } from '../SVG/ShippingLogos';
@@ -13,6 +14,7 @@ export default function Booking() {
     const sameContainerHold = useRef(false);
     const displayData = useRef({});
     const currentKey = useRef(0);
+    const compareForwarder = useRef(null);
     const forwarder= useRef(null);
     const destination = useRef(null);
     const totalPallet = useRef(0);
@@ -164,20 +166,27 @@ export default function Booking() {
                                                       };
     }
 
-    function updateDataSetSpecial({currentStart,key,keyEnd,forwarder,destination,i}){
+    function updateDataSetSpecial(key,keyEnd,forwarder,destination){
+        console.log('CHECK 2 ',key);
           displayData.current[key] = {
                                         ...displayData.current[key],
-                                        'START': i,
+                                        'START': key,
                                         'END':keyEnd,
-                                        'CONTAINER':   currentStart.current ? getTypeFilter(currentStart.current): 'CONTAINER NOT FOUND',
+                                        'CONTAINER':   key? getTypeFilter(key): 'CONTAINER NOT FOUND',
                                         'FORWARDER': forwarder.current ? forwarder.current: 'NOT FOUND',
                                         'DESTINATION':  destinationHandle (destination,excelData,currentStart.current),
-                                        'PICK_UP': getDate(currentStart.current),
-                                        'PICK_TIME':getTime(currentStart.current),
+                                        'PICK_UP': getDate(key),
+                                        'PICK_TIME':getTime(key),
                                     };
 
     }
-
+       function getForwarder( end ){
+            console.log('FUNCTION FORWARDER: ', excelData[end+1].AAMODEL);
+             if(excelData[end+1].AAMODEL !== 'MODEL' && excelData[end+1].AAMODEL !=='?' && excelData[end+1].QUANTITY === '?'){
+                                 console.log('CHECKING NEW FORWARDER ',excelData[end+1].AAMODEL);
+                                return excelData[end+1].AAMODEL;
+                            }
+    }
     function setDetails(key,value){
                     /**
                     *
@@ -189,9 +198,18 @@ export default function Booking() {
 
                     if (value.AAATYPE === undefined && value.DESTINATION === undefined)return;
 
-                    if( value.AAMODEL !== '?'&& forwarder.current !==  value.AAMODEL && value.BINVOICE_NO === '?' && !sameContainerHold.current){
+                    if( value.AAMODEL !== '?'&& forwarder.current !==  value.AAMODEL && value.BINVOICE_NO === '?' && !sameContainerHold.current  &&  compareForwarder.current === null){
+                        console.log('FORWARDER ',key ,compareForwarder.current );
+                        compareForwarder.current = value.AAMODEL;
+                        forwarder.current = value.AAMODEL;
+                    }
 
-                        forwarder.current= value.AAMODEL;
+                     if( forwarder.current === compareForwarder.current && forwarder.current !== undefined){
+                        console.log('CURRENT FORWARDER: ',forwarder.current);
+                    }
+                      if( forwarder.current !== compareForwarder.current &&  compareForwarder.current !== undefined){
+                        console.log('FORWARDER NOT EQUAL: ', compareForwarder.current);
+                        forwarder.current = compareForwarder.current;
                     }
 
                     if(!currentEnd.current && !currentStart.current  && !firstHold.current && value.AAATYPE !== '?' && value.ANO_PALLETS !== '?' && value.BINVOICE_NO !== '?' && typeof value.AAATYPE === 'string'&&value.AAATYPE !== 'TYPE' && !sameContainerHold.current && (value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL"))){
@@ -212,6 +230,8 @@ export default function Booking() {
 
                         if(currentEnd.current && value.AAATYPE !== "?"){
                             const newStartKey = Number(key);
+                            console.log('START CHECK 2',key);
+                            compareForwarder.current = getForwarder(currentEnd.current);
                             updateDataSet({currentStart , newStartKey,currentEnd , forwarder,destination})
                         }
 
@@ -231,7 +251,7 @@ export default function Booking() {
                             let currentCheck = getValidQuantity(Number(key));
                             let checkOneUpQty = getValidQuantity(checkOneUp);
                             let checkTwoUpQty = getValidQuantity(checkTwoUp);
-
+                            console.log(Number(key));
                             if (currentCheck) {
                                  currentStart.current = Number(key);
                                  currentType.current = excelData[Number(key)].AAATYPE;
@@ -254,7 +274,11 @@ export default function Booking() {
 
 
                     if(!currentEnd.current && currentStart.current && firstHold.current && value.AAATYPE === '?' && value.QUANTITY === '?' &&  currentStart.current !== Number(key) && sameContainerHold.current ){
+                        console.log('START CHECK 1',key);
+                        console.log(  getForwarder(Number(key)-1));
+
                         currentEnd.current = Number(key) - 1;
+                        compareForwarder.current = getForwarder(currentEnd.current);
                         const setAsKey  = currentStart.current;
                         updateDataSet({currentStart , setAsKey,currentEnd , forwarder,destination});
                         sameContainerHold.current = false;
@@ -267,27 +291,54 @@ export default function Booking() {
 
                       if(sameContainerHold.current && typeof value.AAATYPE !== 'number'  && ( value.AAATYPE.includes("FCL") || value.AAATYPE.includes("LCL") ) && value.QUANTITY !== 'QUANTITY' &&  value.QUANTITY !== '?' ){
                         if(key > currentStart.current){
-                            currentEnd.current = Number(key) - 1;
+
+                            console.log('END: ' , excelData[Number(key)].AAATYPE,key);
+                            for(let i = 1; i < 10; i++){
+                                if(typeof excelData[Number(key)-i].QUANTITY === 'number'){
+                                     console.log('DIFFERECE TO END ' , i , 'KEY ', Number(key)-i);
+                                     currentEnd.current = Number(key)-i;
+                                     break;
+                                }
+                            }
+
+                            compareForwarder.current = getForwarder(currentEnd.current);
+
                             const setAsKey  = currentStart.current;
                             updateDataSet({currentStart , setAsKey,currentEnd , forwarder,destination});
                             currentStart.current = Number(key);
+                            console.log('NEXT START: ' ,Number(key)+1);
                         }
                     }
 
                     if(Number(key) == excelData.length - 1 ) {
+
                         for (let i = excelData.length - 1 ; i  > currentStart.current ; i--){
-                            if(excelData[i].QUANTITY !== '?' && excelData[i].QUANTITY !== 'QUANTITY'){
-                                    const setAsEndkey =  currentEnd.current = i;
-                                    const setAsKey  = currentStart.current;
-                                    updateDataSetSpecial({currentStart,setAsKey,setAsEndkey,forwarder,destination,i})
+                            if(typeof excelData[Number(key) - i].QUANTITY === 'number'){
+                                    const setAsEndkey = i;
+                                    const setAsKey  =  currentStart.current;
+                                    //function updateDataSetSpecial({currentStart,key,keyEnd,forwarder,destination})
+                                    console.log('CHECK: ' ,Number(key) , 'NUMBER OF ROTATION ',i , 'START ',setAsKey,' END ',setAsEndkey, 'DESTINATION ',destination.current,'FORWARDER ',forwarder.current);
+                                    updateDataSetSpecial(setAsKey,setAsEndkey,forwarder,destination)
+                                    break;
                             }
                         }
 
-                        if(!currentEnd.current < currentEnd.current ){
-                                currentEnd.current = currentStart.current;
-                                const setAsKey  = currentStart.current;
-                                updateDataSet({currentStart , setAsKey,currentEnd , forwarder,destination});
-                        }
+                        // if(!currentEnd.current < currentEnd.current ){
+
+
+                        //         const setAsKey  = currentEnd.current;
+                        //         for (let i =  currentStart.current  ; i  <= excelData.length - 1 ; i++){
+                        //                 if(typeof excelData[i].QUANTITY === 'number'){
+                        //                         console.log(i);
+                        //                     const setAsEndkey = i;
+                        //                     //function updateDataSetSpecial({currentStart,key,keyEnd,forwarder,destination})
+                        //                     console.log('CHECK: ' ,Number(key) , 'NUMBER OF ROTATION ',i , 'START ',setAsKey,' END ',setAsEndkey, 'DESTINATION ',destination.current,'FORWARDER ',forwarder.current);
+                        //                     updateDataSetSpecial(setAsKey,setAsEndkey,forwarder,destination)
+                        //                     break;
+                        //                 }
+                        //         }
+
+                        // }
                     }
     }
 
@@ -312,10 +363,28 @@ export default function Booking() {
     };
     /*Buttons functions*/
     const bookedData = (e) => {
-
         console.log(e.currentTarget.value);
         console.log(excelData);
         console.log(displayData.current);
+        const start = e.currentTarget.value.split("_")[0];
+        const end = e.currentTarget.value.split("_")[1];
+        console.log(start, "------" ,end);
+        router.visit('/shipping-checklist/booking/save',{
+            method:'post',
+            data:
+            {
+                'excel':excelData,
+                'start': Number(start),
+                'end': Number(end),
+            },
+
+            onSucess:(page) => {
+                console.log('Saving Data!');
+            },
+            onError: (errors) => {
+                console.error('Error scanned:', errors);
+            }
+        });
     };
 
     const removeBooked = (e) => {
@@ -400,7 +469,8 @@ export default function Booking() {
             setExcelData(null);
         }
     },[displayDataState]);
-
+    console.log(excelData);
+    console.log(displayData);
     return (
         <div className='booking-compile'>
 
@@ -531,10 +601,7 @@ export default function Booking() {
                     </div>
                 </div>
             )}
-
-
-
-
+      
         </div>
     );
 }
