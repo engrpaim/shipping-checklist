@@ -29,7 +29,7 @@ Route::get('/shipping-checklist/booking', function (Request $request) {
     ]);
 });
 
-Route::post('/shipping-checklist/booking/save', [DataManipulationController::class,'saveData']);
+Route::post('/shipping-checklist/booking/save', [DataManipulationController::class,'save']);
 
 Route::get('/shipping-checklist/queuers', function () {
     return Inertia::render('Main', [

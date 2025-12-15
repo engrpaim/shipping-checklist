@@ -241,6 +241,33 @@ export default function Booking() {
                     }
                 };
             });
+            if (DataContainer && Forwarder && Container && key) {
+            router.visit('/shipping-checklist/booking/save',{
+                    method:'post',
+
+                    data:
+                    {
+                        'data':DataContainer["DISPLAY"]?.[Forwarder]?.[Container]?.[key] ?? null,
+                        'forwarder':Forwarder ?? null,
+                        'destination':key ?? null,
+                        'date': DataContainer["DISPLAY"]?.[Forwarder]["DATE"] ?? null,
+                        'hash': DataContainer["HASH"]?? null,
+                        'size': DataContainer["SIZE"]?? null,
+                        'source': DataContainer["SOURCE"]?? null,
+
+                    },
+                    preserveState: true,
+                    preserveScroll:true,
+                    onSucess:(page) => {
+                        console.log('Saving Data!');
+                    },
+                    onError: (errors) => {
+                        console.error('Error scanned:', errors);
+                    }
+            });
+            }else {
+    console.warn('Data not ready yet');
+}
         };
 
 
