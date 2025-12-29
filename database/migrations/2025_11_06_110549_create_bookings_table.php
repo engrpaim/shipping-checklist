@@ -13,7 +13,9 @@ return new class extends Migration
     {
         Schema::create('bookings', function (Blueprint $table) {
             $table->integer('No')->autoIncrement();
+            $table->string('Shipment_Serial')->require();
             $table->string('Model')->nullable();
+            $table->integer('Quantity')->nullable();
             $table->string('Invoice_No')->nullable();
             $table->string('Destination')->nullable();
             $table->string('Type')->nullable();
@@ -32,7 +34,7 @@ return new class extends Migration
             $table->string('File_Size')->nullable();
             $table->enum('Status',['BOOKED','LOADING','SHIPPED','CANCELLED'])->default('BOOKED');
             $table->enum('Picture',['YES','NO'])->default('NO');
-            $table->dateTime('pictureTimeStamp')->useCurrent();
+            $table->dateTime('pictureTimeStamp')->nullable();
             $table->timestamps();
         });
     }

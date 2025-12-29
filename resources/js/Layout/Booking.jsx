@@ -19,18 +19,20 @@ export default function Booking() {
 
     /*Track State*/
     const [isDragging, setIsDragging] = useState(false);
+
     /*File Upload*/
-
     const [DataContainer , setDataContainer] = useState({});
-
+    const [Notification , setNotification] = useState({});
     function indexingFnc(row){
         let allRequired = {};
+
         const dataRequirements = [
-        "MODEL", "QUANTITY", "INVOICE NO.", "INVOICE DATE",
-        "DESTINATION", "TYPE", "PICK UP DATE", "PICK UP TIME",
-        "QUANTITY PER CARTON", "NO. OF CARTON", "PALLET WIDTH (MIDDLE)", "NO. OF PALLETS",
-         "PLANT AREA",
+            "MODEL", "QUANTITY", "INVOICE NO.", "INVOICE DATE",
+            "DESTINATION", "TYPE", "PICK UP DATE", "PICK UP TIME",
+            "QUANTITY PER CARTON", "NO. OF CARTON", "PALLET WIDTH (MIDDLE)", "NO. OF PALLETS",
+            "PLANT AREA",
         ];
+
         row.forEach((item,index)=>{
                 if(!item || typeof item === 'number') return;
                 const fontCase = item.toUpperCase().trim();
@@ -67,7 +69,27 @@ export default function Booking() {
         });
     }
 
+
+      function excelTimeToHHMM(decimal)
+    {
+        const totalMinutes = Math.round(decimal * 24 * 60);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
+          const seconds = totalMinutes % 60;
+
+        return `${hours.toString().padStart(2, '0')}:` +
+           `${minutes.toString().padStart(2, '0')}:` +
+           `${seconds.toString().padStart(2, '0')}`;
+
+    }
+
+    function getTime(data){
+        const time = data? data :null;
+        const newTime = excelTimeToHHMM(time);
+        return newTime;
+    }
     const handleFileChange = async (e) => {
+        setNotification(null);
         const file = e.target.files[0];
 
         if(!file.name.includes('.xlsx')){
@@ -163,8 +185,9 @@ export default function Booking() {
                                AllData[Forwarder]['DATE']= pickupdate ? getDate(pickupdate):'-' ;
                                AllData[Forwarder][type] ??= {};
                                AllData[Forwarder][type][destination]??= {};
+                               AllData[Forwarder][type][destination]['TIME']= picktime ? getTime(picktime):'-' ;
                                AllData[Forwarder][type][destination][model]??= {};
-                               AllData[Forwarder][type][destination][model][KeyIndexing?.[key]]=row?.[key];
+                               AllData[Forwarder][type][destination][model][KeyIndexing?.[key]] = row?.[key];
                         }
 
 
@@ -177,7 +200,8 @@ export default function Booking() {
 
 
         });
-         setDataContainer(prev =>({
+
+        setDataContainer(prev =>({
             ...prev,
             DISPLAY:AllData,
             COUNTFORWARDER:CurrentForwarder,
@@ -187,6 +211,15 @@ export default function Booking() {
             SOURCE:file.name,
             SIZE:fileSizeInKB,
          }));
+
+         if(Object.entries(AllData).length === 0){
+            setNotification( prev =>({
+                ...prev,
+                type : 'Booking',
+                error:'Invalid Excel data!',
+            }));
+         }
+
     }
 
     const handleDrop = (e) => {
@@ -241,7 +274,6 @@ export default function Booking() {
                     }
                 };
             });
-            if (DataContainer && Forwarder && Container && key) {
             router.visit('/shipping-checklist/booking/save',{
                     method:'post',
 
@@ -250,11 +282,11 @@ export default function Booking() {
                         'data':DataContainer["DISPLAY"]?.[Forwarder]?.[Container]?.[key] ?? null,
                         'forwarder':Forwarder ?? null,
                         'destination':key ?? null,
+                        'type':Container ?? null,
                         'date': DataContainer["DISPLAY"]?.[Forwarder]["DATE"] ?? null,
                         'hash': DataContainer["HASH"]?? null,
                         'size': DataContainer["SIZE"]?? null,
                         'source': DataContainer["SOURCE"]?? null,
-
                     },
                     preserveState: true,
                     preserveScroll:true,
@@ -265,9 +297,6 @@ export default function Booking() {
                         console.error('Error scanned:', errors);
                     }
             });
-            }else {
-    console.warn('Data not ready yet');
-}
         };
 
 
@@ -313,20 +342,20 @@ export default function Booking() {
                         <>
 
 
-                        <div>
-                            <table className='booking-details'>
+                        <div className='booking-details'>
+                            <table >
                                 <thead>
 
-                                        {
-                                            titleHeaders.map((titles,index)=>(
-                                                <th key={index}>{titles}</th>
-                                            ))
-                                        }
-
+                                    {
+                                        titleHeaders.map((titles,index)=>(
+                                            <th key={index}>{titles}</th>
+                                        ))
+                                    }
                                 </thead>
                                 <tbody>
                                     {
                                         Object.entries(value).map(([keyModel,modelValue])=>{
+                                            if(keyModel === 'TIME' ) return;
                                             return(
                                                 <tr key={keyModel} >
                                                     {
@@ -364,7 +393,7 @@ useEffect(()=>{if(DataContainer &&DataContainer["DISPLAY"] && Object.entries(Dat
                 setDataContainer(null);
              };},[DataContainer])
 
-    console.log(' DATA CONTAINER:',DataContainer );
+    console.log(' DATA CONTAINER:',DataContainer , Notification);
     return (
         <div className='booking-compile'>
             <div className="file-uploader-container">
@@ -428,7 +457,7 @@ useEffect(()=>{if(DataContainer &&DataContainer["DISPLAY"] && Object.entries(Dat
                                     <div>
                                         {
                                             valueMain && Object.entries(valueMain).map(([keyContainer,valueContainer])=>{
-                                                if(keyContainer.includes('DATE')) return;
+                                                if(keyContainer.includes('DATE') || keyContainer.includes('TIME')) return;
                                                 return(
                                                     <div key={keyContainer} className="booking-data-type">
                                                         <div className="booking-data-type-header">

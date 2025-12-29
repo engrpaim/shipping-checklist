@@ -11,7 +11,7 @@ export default function Main() {
     const {name} =useApp();
     const {idNumber} = useApp();
     const { url } = usePage();
-    console.log(ip,name,idNumber,url);
+
 
     return(
         <>

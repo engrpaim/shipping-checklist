@@ -1,0 +1,208 @@
+.tablet-introduction {
+    display: flex;
+    flex-direction: column;
+    margin: 0 5rem;
+    width: 90vw;
+}
+.tablet-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    margin: 5rem 0;
+    gap: 2rem;
+}
+
+.tablet-data {
+    display: flex;
+    flex-direction: column;
+    width: 80vw;
+    padding: 4rem;
+    gap: 2rem;
+    border-radius: 2rem;
+    box-shadow:
+        rgba(0, 0, 0, 0.05) 0px 6px 24px 0px,
+        rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+}
+
+.tablet-header {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+}
+.table-wrapper {
+    overflow-x: auto; /* horizontal scroll */
+    width: 100%;
+    box-shadow:
+        rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+        rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+    padding: 3rem 1rem;
+}
+.tablet-table {
+    border-collapse: collapse;
+}
+.tablet-table table {
+    table-layout: fixed;
+    width: 100%;
+}
+.tablet-table td,
+.tablet-table th {
+    width: 10rem;
+    text-align: center;
+    vertical-align: middle;
+    padding: 1rem;
+    height: 5rem;
+}
+
+.tablet-table tbody tr {
+    gap: 1rem;
+    border-bottom: 1px solid #ddd;
+}
+.tablet-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+    padding: 1rem;
+    width: 10rem;
+    background: #f8d800;
+}
+.tablet-details-shipment {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    border-radius: 1rem;
+    padding: 1rem;
+    width: fit-content;
+    background: #f8d800;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 50px;
+    height: 26px;
+}
+
+/* Hide default checkbox */
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+/* Slider background */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ffc9c9;
+    transition: 0.4s;
+    border-radius: 34px;
+}
+
+/* Circle */
+.slider::before {
+    position: absolute;
+    content: "";
+    height: 20px;
+    width: 20px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: 0.4s;
+    border-radius: 50%;
+}
+
+/* ON state */
+.switch input:checked + .slider {
+    background-color: #4caf50;
+}
+
+.switch input:checked + .slider::before {
+    transform: translateX(24px);
+}
+
+/* Disabled state */
+.switch input:disabled + .slider {
+    background-color: #999;
+    cursor: not-allowed;
+}
+.scan-container {
+    display: flex;
+    justify-content: end;
+    padding: 2rem;
+    width: 100%;
+    height: 5rem;
+    margin: 1rem 0;
+}
+.scan-camera p,
+.scan-camera strong {
+    font-size: 1.2rem;
+}
+.scan-camera button {
+    display: flex;
+    justify-conten: center;
+    align-items: Center;
+    gap: 2rem;
+    border: none;
+    background: none;
+}
+.scan-camera {
+    display: flex;
+    background: #e5c548;
+    border-radius: 1rem;
+    padding: 1rem;
+}
+.loaded-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+.btn-container {
+    display: flex;
+    flex-direction: row;
+    gap: 2rem;
+}
+.ship-btn,
+.confirm-btn,
+.cancel-btn {
+    width: 7rem;
+    padding: 0.5rem;
+    background: none;
+    border: none;
+    border-radius: 0.5rem;
+}
+.confirm-btn {
+    background: #05df72;
+    color: white;
+}
+
+.cancel-btn {
+    background: #fa0511;
+    color: white;
+}
+.ship-btn {
+    background: #2b7fff;
+    color: white;
+}
+.unload-container {
+    display: flex;
+    gap: 1rem;
+}
+.unload-container button {
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+    background: #e7180b;
+    border: none;
+    color: white;
+}

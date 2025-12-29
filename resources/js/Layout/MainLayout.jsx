@@ -3,15 +3,16 @@ import { Head , usePage } from '@inertiajs/react';
 import '../../css/app.css';
 import { AppProvider } from "@/Context/AppContext";
 import { useApp } from "../Context/AppContext";
-import { Truck ,Ticket ,ArrowIcon} from '../SVG/ShippingLogos';
-export default function MainLayout({children}){
+import { Truck ,Ticket ,ArrowIcon,ForkLift} from '../SVG/ShippingLogos';
+import shinetsu  from '../../images/shinetsu.png';
+import ae from '../../images/AE.png';
+export default function MainLayout({children,mobile}){
     const {ip} = useApp();
     const {name} =useApp();
     const {idNumber} = useApp();
-    console.log(ip,name,idNumber, 'nav');
-    return(
-       <AppProvider>
-       <div className="main-child">
+    function desktop(){
+        return(
+            <>
             <nav className='nav-bar'>
                 <div className="nav-bar-container">
                     <div className='nav-bar-left'>
@@ -42,7 +43,7 @@ export default function MainLayout({children}){
 
                     <div className='logout-dash'>
 
-                            <h1>{name}&nbsp;({idNumber})</h1>
+                        <h1>{name}&nbsp;({idNumber})</h1>
 
                         <a href="/shipping-checklist/home" className='nav-logout'><ArrowIcon height={25} width={25} fill={'#A58400'} className='nav-logout'/></a>
                     </div>
@@ -55,7 +56,55 @@ export default function MainLayout({children}){
                     </div>
                 </section>
             </main>
-        </div>
+        </>
+        );
+    }
+
+     function mobileDisplay(){
+        return(
+
+            <>
+                <main className='content-mobile'>
+                    <nav className='nav-bar-mobile'>
+                        <div className="nav-bar-container-mobile">
+                            <div className='header-mobile'>
+                                <div className='left-header'>
+                                    <h1>SHIPMENT CHECKLIST</h1>
+                                    <p>powered by <strong>AE</strong></p>
+                                </div>
+                            </div>
+                            <div>
+                                <img src={shinetsu} alt="Shinetsu logo"  style={{ width:150 }}/>
+                            </div>
+                            <div className='logout-dash-mobile'>
+                                <div className='buttons-mobile'>
+                                    <ForkLift size={24}/>
+                                    <a href="/shipping-checklist/queue">Load</a>
+                                </div>
+                                <h1>{name}&nbsp;({idNumber})</h1>
+                                <div className='mobile-logout'>
+                                    <a href="/shipping-checklist/home" className='nav-logout'><ArrowIcon height={25} width={25} fill={'#A58400'} className='nav-logout'/></a>
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+                    <section className='content-container-mobile'>
+
+                            {children}
+
+                    </section>
+                </main>
+            </>
+        );
+
+    }
+    return(
+       <AppProvider>
+           <div className="main-child">
+            {
+                mobile ? mobileDisplay():desktop()
+            }
+            </div>
         </AppProvider>
     );
 }
