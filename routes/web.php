@@ -12,7 +12,7 @@ use App\Mail\SystemNotificationMail;
 Route::get('/shipping-checklist/home', function (Request $request) {
     $ip = $request->ip();
     $check = Admin::where('ip_address','=',$ip)->first();
-
+    dd($ip);
     return Inertia::render('Main', [
         'appName' => config('app.name'),
         'client_ip' =>$check->ip_address?? null,
@@ -78,3 +78,4 @@ Route::get('/shipping-checklist/queuers', function () {
 Route::post('/shipping-checklist/queue/mc',[DataManipulationController::class,'loadInvoice']);
 Route::post('/shipping-checklist/queue/mcu',[DataManipulationController::class,'unLoadInvoice']);
 Route::post('/shipping-checklist/queue/mcups',[DataManipulationController::class,'updateStatus']);
+
