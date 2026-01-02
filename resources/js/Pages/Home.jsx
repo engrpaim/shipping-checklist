@@ -86,6 +86,7 @@ export default function Home(){
                         </div>
                         :
                         <div className= "login-div">
+                        <h1>IP&nbsp;({ip??'NOT FOUND'})</h1>
                             <div className="login-input">
                                 <label>ID NUMBER:</label>
                                 <input/>
