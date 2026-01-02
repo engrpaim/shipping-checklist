@@ -90,6 +90,7 @@ export default function Queue(queueData){
                         let countTotal = 0;
                         let countRow = 0;
                         let isCounted = 0;
+                        let isChecked = 0;
                         return(
                             <div className="tablet-data" key={index}>
 
@@ -141,7 +142,8 @@ export default function Queue(queueData){
                                             {
                                                 value["details"] && Object.entries(value["details"]).map(([invoice,data,index])=>{
                                                     countTotal += data["Pallet_Number"];
-                                                    data["Counted_By"] !== null ? isCounted += 1:null;
+                                                    data["Counted_By"]  !== null ? isCounted += data["Pallet_Number"]:null;
+                                                    data["Checked_by"]  !== null ? isChecked += data["Pallet_Number"]:null;
                                                     countRow++;
                                                     const statusScan = scannedId && scannedId.includes(key);
 
@@ -213,8 +215,12 @@ export default function Queue(queueData){
                                     <div className="scan-container">
                                         <div className="loaded-container">
                                             <div>
-                                                <h1>Loaded Pallet</h1>
-                                                <p>{0}</p>
+                                                <h1>Checked Pallet</h1>
+                                                <p>{isChecked}</p>
+                                            </div>
+                                            <div>
+                                                <h1>Counted Pallet</h1>
+                                                <p>{isCounted}</p>
                                             </div>
                                             <div>
                                                 <h1>Total Pallet</h1>

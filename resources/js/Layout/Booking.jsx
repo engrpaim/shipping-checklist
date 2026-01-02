@@ -104,9 +104,9 @@ export default function Booking() {
         const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
         const json = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
 
-        const hashBuffer = await window.crypto.subtle.digest('SHA-256', arrayBuffer);
-        const hashArray = Array.from(new Uint8Array(hashBuffer));
-        const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        // const hashBuffer = await window.crypto.subtle.digest('SHA-256', arrayBuffer);
+        // const hashArray = Array.from(new Uint8Array(hashBuffer));
+        // const hexHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 
         let Forwarder = '';
         let CurrentForwarder = 0;
@@ -207,7 +207,6 @@ export default function Booking() {
             COUNTFORWARDER:CurrentForwarder,
             COUNTINVOICE:CurrentInvoice,
             COUNTCONTAINER:CurrentContainer,
-            HASH:hexHash,
             SOURCE:file.name,
             SIZE:fileSizeInKB,
          }));
