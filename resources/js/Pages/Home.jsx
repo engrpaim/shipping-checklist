@@ -67,7 +67,7 @@ export default function Home(){
                         ip !== null ?
                         <div className="checking-ip">
                             <div className="checking-title">
-                                <h1>Welcome&nbsp;{name}&nbsp;({idNumber})</h1>
+                                <h1>Welcome&nbsp;{name}&nbsp;({idNumber})&nbsp;({ip})</h1>
                             </div>
                             <div className="button-containers">
                                 {
