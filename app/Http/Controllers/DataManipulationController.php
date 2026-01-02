@@ -25,7 +25,6 @@ class DataManipulationController extends Controller
             'destination' => 'required|string',
             'date' => ['required', 'date_format:d/m/Y'],
             'size' => 'required|string',
-            'hash' => 'required|string',
             'source' => 'required|string',
         ]);
 
@@ -48,7 +47,7 @@ class DataManipulationController extends Controller
         $date =  Carbon::createFromFormat('m/d/Y', $request->input('date'))->format('Y-m-d');
         $dateSerial =  Carbon::createFromFormat('m/d/Y', $request->input('date'))->format('Ymd');
         $forwarder = $request->input('forwarder');
-        $hash = $request->input('hash');
+        $hash = $request->input('hash') ?? '-';
         $size = $request->input('size');
         $source = $request->input('source');
         $shipment_serial = $forwarder . str_replace(":","",$dateSerial .$data["TIME"]) . str_replace(" ", "",$destination);
