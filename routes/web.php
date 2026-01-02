@@ -12,7 +12,6 @@ use App\Mail\SystemNotificationMail;
 Route::get('/shipping-checklist/home', function (Request $request) {
     $ip = $request->ip();
     $check = Admin::where('ip_address','=',$ip)->first();
-    dd($ip);
     return Inertia::render('Main', [
         'appName' => config('app.name'),
         'client_ip' =>$check->ip_address?? null,
