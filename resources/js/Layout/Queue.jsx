@@ -39,24 +39,19 @@ export default function Queue(queueData){
             replace:false
         });
     }
-    const handleLoad =(shipmentSerial,status)=>{
-        console.log('loading: ....',shipmentSerial,status);
-        if(!shipmentSerial) return;
+    const handleLoad = (shipmentSerial, status) => {
+        console.log('loading: ....', shipmentSerial, status);
+        if (!shipmentSerial) return;
 
-            router.visit('/shipping-checklist/queue/mc',{
-                method:'post',
-                data:{
-                    load:shipmentSerial??null,
-                    status: status ? status:'BOOKED'
-                },
-                preserveState:true,
-                preserveScroll:true,
-                replace:false
-            });
-
-
-
-    }
+        router.post('/shipping-checklist/queue/mc', {
+            load: shipmentSerial,
+            status: status ?? 'BOOKED',
+        }, {
+            preserveState: true,
+            preserveScroll: true,
+            replace: false,
+        });
+    };
 
 
 
