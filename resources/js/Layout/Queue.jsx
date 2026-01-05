@@ -41,6 +41,7 @@ export default function Queue(queueData){
     }
     const handleLoad = (shipmentSerial, status) => {
         console.log('loading: ....', shipmentSerial, status);
+          console.log('CSRF Token:', document.querySelector('meta[name="csrf-token"]')?.content);
         if (!shipmentSerial) return;
 
         router.post('/shipping-checklist/queue/mc', {
