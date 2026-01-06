@@ -90,7 +90,9 @@ export default function Queue(queueData){
                         return(
                             <div className="tablet-data" key={index}>
 
-                                <div className="tablet-header" >
+
+
+                                  <div className="tablet-header" >
                                     <div className="tablet-details-shipment">
                                         <h1>Shipment Serial</h1>
                                         <p>{key}</p>
@@ -99,21 +101,18 @@ export default function Queue(queueData){
                                         <h1>Destination</h1>
                                         <p>{value["Destination"]}</p>
                                     </div>
-                                    <div className="tablet-details">
-                                        <h1>Date</h1>
-                                        <p>{value["Pickup_Date"]}</p>
-                                    </div>
-                                    <div className="tablet-details">
-                                        <h1>Time</h1>
-                                        <p>{value["Pickup_time"]}</p>
-                                    </div>
-                                    <div className="tablet-details">
+                                     <div className="tablet-details">
                                         <h1>Forwarder</h1>
                                         <p>{value["Forwarder"]}</p>
                                     </div>
                                     <div className="tablet-details">
                                         <h1>Type</h1>
                                         <p>{value["Type"].split(';')[0]}</p>
+                                    </div>
+
+                                    <div className="tablet-details">
+                                        <h1>Date & Time</h1>
+                                        <p>{value["Pickup_Date"]} {value["Pickup_time"]}</p>
                                     </div>
                                 </div>
                                 <div className="table-wrapper">
@@ -122,11 +121,11 @@ export default function Queue(queueData){
                                             <tr>
                                                 <th>Model</th>
                                                 <th>Invoice Number</th>
-                                                <th>Quantity</th>
-                                                <th>Quantity Per Carton</th>
-                                                <th>Carton Number</th>
+                                                <th>Qty</th>
+                                                <th>Qty Per Carton</th>
+                                                <th>Carton #</th>
                                                 <th>Pallet Width</th>
-                                                <th>Number of Pallets</th>
+                                                <th># of Pallets</th>
                                                 <th>Plant</th>
                                                 <th>Check</th>
                                                 <th>Count</th>
