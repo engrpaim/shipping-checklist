@@ -222,6 +222,8 @@ class DataManipulationController extends Controller
             'client_ip' => $check->ip_address?? null,
             'client_details' => $check ?? null
         ]);
+
+
     }
 
 

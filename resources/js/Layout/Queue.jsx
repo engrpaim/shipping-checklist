@@ -1,12 +1,26 @@
 import { useApp } from "../Context/AppContext"
 import { router } from "@inertiajs/react";
 import '../../css/tablet.css';
-import { useState } from "react";
-import { QRIcon } from "../SVG/ShippingLogos";
+import { useState , useRef } from "react";
+import { QRIcon ,CameraIcon } from "../SVG/ShippingLogos";
+import Webcam from 'react-webcam';
 export default function Queue(queueData){
     const [checker , setChecker] = useState(null);
     const [scannedId , setScannedId ] = useState(null);
     const [loadInvoice , setLoadInvoice] = useState([]);
+    const [isPictureExist , setIsPictureExist] = useState(null);
+    const videoConstraints = {
+    width: 400,
+    height: 300,
+    facingMode: "environment", // "environment" for back camera on mobile
+    };
+    const webcamRef = useRef(null);
+  const [image, setImage] = useState(null);
+
+  const capture = () => {
+    const screenshot = webcamRef.current.getScreenshot();
+    setImage(screenshot);
+  };
     console.log('Queue: ',queueData);
 
     const handleScanId =(shipmentSerial)=> {
@@ -15,6 +29,7 @@ export default function Queue(queueData){
     }
     const handleCancel =()=>{
         setScannedId(null);
+          setScannedId([]);
     }
     const handleInvoiceLoad =(invoice)=>{
 
@@ -36,7 +51,6 @@ export default function Queue(queueData){
                 'Status' : status
             },
             preserveScroll:true,
-            replace:false
         });
     }
     const handleLoad = (shipmentSerial, status) => {
@@ -50,12 +64,16 @@ export default function Queue(queueData){
         }, {
             preserveState: true,
             preserveScroll: true,
-            replace: false,
         });
+
+
     };
 
 
-
+    const handleOpenCamera=(shipment)=>{
+        console.log('CAMERA OPTION: ',shipment);
+        setIsPictureExist(shipment);
+    }
     const handleUnload=(invoice,column)=>{
         if(!invoice && !loadInvoice) return;
         setLoadInvoice((prev)=>
@@ -224,12 +242,31 @@ export default function Queue(queueData){
                                             <div className="btn-container">
                                                 {
                                                      value["Shipment_Status"] === 'BOOKED' ?<button className="ship-btn" onClick={()=>{handleDatagrabber(key ,'LOADING')}}>CHECKED</button>
-                                                    :value["Shipment_Status"] === 'LOADING' && isCounted > 0 ?<button className="ship-btn" onClick={()=>{handleDatagrabber(key ,'SHIPPED')}}>SHIPPED</button>
+                                                    :value["Shipment_Status"] === 'LOADING' && isCounted > 0  && isPictureExist?<button className="ship-btn" onClick={()=>{handleDatagrabber(key ,'SHIPPED')}}>SHIPPED</button>
                                                     :null
                                                 }
                                                 {
                                                     value["Shipment_Status"] !== 'SHIPPED' &&
                                                     <>
+                                                        {!isPictureExist ? <button className="camera-btn" onClick={(()=>{handleOpenCamera(key)})}>CAMERA<CameraIcon color="#ffffff"/></button>:
+                                                         <>
+                                                            <Webcam
+        audio={false}
+        ref={webcamRef}
+        screenshotFormat="image/jpeg"
+        videoConstraints={videoConstraints}
+      />
+
+      <br />
+      <button onClick={capture}>Capture Photo</button>
+      {image && (
+        <div>
+          <h3>Captured Image:</h3>
+          <img src={image} alt="Captured" />
+        </div>
+      )}
+
+                                                         </>}
                                                         <button className="confirm-btn" onClick={()=>{handleLoad(loadInvoice,value["Shipment_Status"])}}>LOAD</button>
                                                         <button className="cancel-btn" onClick ={()=>{handleCancel()}}>CANCEL</button>
                                                     </>
