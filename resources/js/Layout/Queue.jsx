@@ -1,28 +1,53 @@
 import { useApp } from "../Context/AppContext"
 import { router } from "@inertiajs/react";
 import '../../css/tablet.css';
-import { useState , useRef } from "react";
+import { useEffect, useRef, useState  } from "react";
 import { QRIcon ,CameraIcon } from "../SVG/ShippingLogos";
-import Webcam from 'react-webcam';
+
 export default function Queue(queueData){
     const [checker , setChecker] = useState(null);
     const [scannedId , setScannedId ] = useState(null);
     const [loadInvoice , setLoadInvoice] = useState([]);
     const [isPictureExist , setIsPictureExist] = useState(null);
-    const videoConstraints = {
-    width: 400,
-    height: 300,
-    facingMode: "environment", // "environment" for back camera on mobile
-    };
-    const webcamRef = useRef(null);
-  const [image, setImage] = useState(null);
-
-  const capture = () => {
-    const screenshot = webcamRef.current.getScreenshot();
-    setImage(screenshot);
-  };
+    const [isCameraOpen , setCameraOpen] = useState(null);
+    const videoRef = useRef(null);
+    const canvasRef = useRef(null);
+    const [stream, setStream] = useState(null);
     console.log('Queue: ',queueData);
+      useEffect(() => {
+    startCamera();
 
+    return () => {
+      // Stop camera on unmount
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+    const takePhoto = () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+
+    const imageData = canvas.toDataURL('image/png');
+    console.log(imageData); // send to server if needed
+  };
+  const startCamera = async () => {
+    try {
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+      });
+      videoRef.current.srcObject = mediaStream;
+      setStream(mediaStream);
+    } catch (error) {
+      console.error('Camera access denied:', error);
+    }
+  };
     const handleScanId =(shipmentSerial)=> {
 
         setScannedId(shipmentSerial);
@@ -72,7 +97,7 @@ export default function Queue(queueData){
 
     const handleOpenCamera=(shipment)=>{
         console.log('CAMERA OPTION: ',shipment);
-        setIsPictureExist(shipment);
+        setCameraOpen(shipment);
     }
     const handleUnload=(invoice,column)=>{
         if(!invoice && !loadInvoice) return;
@@ -248,30 +273,19 @@ export default function Queue(queueData){
                                                 {
                                                     value["Shipment_Status"] !== 'SHIPPED' &&
                                                     <>
-                                                        {!isPictureExist ? <button className="camera-btn" onClick={(()=>{handleOpenCamera(key)})}>CAMERA<CameraIcon color="#ffffff"/></button>:
-                                                         <>
-                                                            <Webcam
-        audio={false}
-        ref={webcamRef}
-        screenshotFormat="image/jpeg"
-        videoConstraints={videoConstraints}
-      />
-
-      <br />
-      <button onClick={capture}>Capture Photo</button>
-      {image && (
-        <div>
-          <h3>Captured Image:</h3>
-          <img src={image} alt="Captured" />
-        </div>
-      )}
-
-                                                         </>}
+                                                        <button className="camera-btn" onClick={(()=>{handleOpenCamera(key)})}>CAMERA<CameraIcon color="#ffffff"/></button>
                                                         <button className="confirm-btn" onClick={()=>{handleLoad(loadInvoice,value["Shipment_Status"])}}>LOAD</button>
                                                         <button className="cancel-btn" onClick ={()=>{handleCancel()}}>CANCEL</button>
                                                     </>
                                                 }
-
+                                                {
+                                                    isCameraOpen &&  <div>
+      <video ref={videoRef} autoPlay playsInline />
+      <br />
+      <button onClick={takePhoto}>Take Photo</button>
+      <canvas ref={canvasRef} style={{ display: 'none' }} />
+    </div>
+                                                }
                                             </div>
                                         </div>
                                     </div>:
