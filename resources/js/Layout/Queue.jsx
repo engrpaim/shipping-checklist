@@ -40,7 +40,9 @@ export default function Queue(queueData){
   const startCamera = async () => {
     try {
       const mediaStream = await navigator.mediaDevices.getUserMedia({
-        video: true,
+          video: {
+    facingMode: { ideal: "environment" }, // rear camera
+  },
       });
       videoRef.current.srcObject = mediaStream;
       setStream(mediaStream);
