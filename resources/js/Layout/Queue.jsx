@@ -48,7 +48,7 @@ export default function Queue(queueData){
 
             if (code) {
                 // This is the actual scanned QR content:
-                const name = code.data.split(";")[1];
+                const name = code.data.split(";")[2];
                 alert(name)
                 setScannedId(name);
                 setOpenCamera(null);
