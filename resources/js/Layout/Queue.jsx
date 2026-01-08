@@ -31,7 +31,6 @@ export default function Queue(queueData){
                 }
 
                 if (openCamera === "SCAN ID") {
-                    alert('qr');
                     scanInterval = setInterval(() => {
         if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
             const canvas = canvasRef.current;
@@ -48,8 +47,9 @@ export default function Queue(queueData){
 
             if (code) {
                 // This is the actual scanned QR content:
-                alert("QR Detected: " + code.data);
-
+                const name = code.data.split(";")[1];
+                setScannedId(name);
+                setOpenCamera(null);
                 // Optional: stop scanning after first detection
                 // clearInterval(scanInterval);
             }
