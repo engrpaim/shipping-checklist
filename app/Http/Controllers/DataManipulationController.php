@@ -246,7 +246,7 @@ class DataManipulationController extends Controller
                 'client_details' => $check ?? null,
             ]);
         };
-
+        $all = $request->all();
         $data = $request->input('invoice');
         $column = $request->input('column');
         $statusUnload = $column === 'Checked_by' ? 'BOOKED' : 'LOADING';
@@ -254,7 +254,7 @@ class DataManipulationController extends Controller
             $updateloaded =DB::table('bookings')
                                 ->where('Invoice_No',$data)
                                 ->update(['Status' =>$statusUnload, $column   => null]);
-            Activity_Logs::logs($data,$check->first,$check->ip_address,'Queue','unload');
+            Activity_Logs::logs($all,$check->first,$check->ip_address,'Queue','unload');
 
         }catch(Exception $e){
                 dd($e->getMessage());
