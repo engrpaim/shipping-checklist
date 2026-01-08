@@ -12,6 +12,7 @@ export default function Queue(queueData){
     const [isPictureExist , setIsPictureExist] = useState(null);
     const [openCamera , setOpenCamera] = useState(null);
     const [shipmentSerialSte, setShipmentSerial] = useState(null);
+    const [captureImage ,setCapturedImage] = useState(null);
     const videoRef = useRef(null);
     const streamRef = useRef(null);
     const canvasRef = useRef(null);
@@ -88,7 +89,7 @@ export default function Queue(queueData){
 
     const imageBase64 = canvas.toDataURL("image/png");
 
-   alert("Captured image:", imageBase64);
+   setCapturedImage(imageBase64);
 
     setIsPictureExist(true);
 
@@ -374,6 +375,7 @@ export default function Queue(queueData){
                                     <button className="capture-btn" onClick={()=>{handleCapture()}} >CAPTURE<CameraIcon color="#ffffff"/></button>
                                 </div>
                             }
+                            <div>{captureImage}</div>
                         </div>
                     </div>
                 </div>
