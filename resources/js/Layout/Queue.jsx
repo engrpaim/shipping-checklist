@@ -48,6 +48,7 @@ export default function Queue(queueData){
             if (code) {
                 // This is the actual scanned QR content:
                 const name = code.data.split(";")[1];
+                alert(name)
                 setScannedId(name);
                 setOpenCamera(null);
                 // Optional: stop scanning after first detection
@@ -278,7 +279,7 @@ export default function Queue(queueData){
                                     </table>
                                 </div>
                                 {
-                                    scannedId  && scannedId.includes(key)?
+                                    scannedId ?
                                     <div className="scan-container">
                                         <div className="loaded-container">
                                             <div>
