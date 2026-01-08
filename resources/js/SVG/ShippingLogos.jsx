@@ -450,6 +450,19 @@ const CameraIcon = ({ size = 24, color = "#1f1f1f" }) => (
   </svg>
 );
 
+
+const CloseIcon = ({ size = 24, color = "currentColor" }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 208.891 208.891"
+    width={size}
+    height={size}
+    fill={color}
+  >
+    <path d="M0,170l65.555-65.555L0,38.891L38.891,0l65.555,65.555L170,0l38.891,38.891l-65.555,65.555L208.891,170L170,208.891l-65.555-65.555l-65.555,65.555L0,170z" />
+  </svg>
+);
+
 export {
   CrateShippingLogo,
   PickupDateLogo,
@@ -473,5 +486,7 @@ export {
    CheckCircleIcon,
    ForkLift,
    QRIcon,
-   CameraIcon
+   CameraIcon,
+   CloseIcon
+
 };
