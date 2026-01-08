@@ -108,7 +108,8 @@ export default function Queue(queueData){
             method:'post',
             data:{
                 'ShipmentSerial' : ShipmentSerial,
-                'Status' : status
+                'Status' : status,
+                'Name': scannedId
             },
             preserveScroll:true,
         });
@@ -121,6 +122,7 @@ export default function Queue(queueData){
         router.post('/shipping-checklist/queue/mc', {
             load: shipmentSerial,
             status: status ?? 'BOOKED',
+            name: scannedId
         }, {
             preserveState: true,
             preserveScroll: true,
@@ -141,7 +143,8 @@ export default function Queue(queueData){
             method:'post',
             data:{
                 invoice:invoice??null,
-                column:column??null
+                column:column??null,
+                name: scannedId
             },
             preserveState:true,
             preserveScroll:true,

@@ -163,7 +163,8 @@ class DataManipulationController extends Controller
 
         $isChecked = $request->validate([
                 'load' => 'array',
-                'status' => 'string|nullable'
+                'status' => 'string|nullable',
+                'name' => 'string'
         ]);
 
         if( ! $isChecked ) {
@@ -177,6 +178,7 @@ class DataManipulationController extends Controller
 
         $data = $request->input('load');
         $status = !$request->input('status') ? 'BOOKED'  :$request->input('status') ;
+        $name = $request->input('name');
         $column =  $status === 'LOADING' ? 'Counted_By' : 'Checked_by';
 
         $status  === 'BOOKED'  ?     $status = 'LOADING' :null;
@@ -185,7 +187,7 @@ class DataManipulationController extends Controller
 
             $updateloaded =DB::table('bookings')
                                 ->where('Invoice_No',$items)
-                                ->update(['Status' =>  $status , $column   => 'try']);
+                                ->update(['Status' =>  $status , $column   =>  $name ]);
             }catch(Exception $e){
                  dd($e->getMessage());
             }
@@ -304,6 +306,7 @@ class DataManipulationController extends Controller
         $checkIfValid = $request->validate([
             'Status' => 'string',
             'ShipmentSerial' => 'string'
+
         ]);
 
         if(!$checkIfValid) return;
