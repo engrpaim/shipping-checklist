@@ -20,6 +20,7 @@
         "@react-email/components": "^0.5.7",
         "@react-email/html": "^0.0.11",
         "@vitejs/plugin-react": "^4.7.0",
+        "jsqr": "^1.4.0",
         "react": "^18.3.1",
         "react-dom": "^18.3.1",
         "react-webcam": "^7.2.0",

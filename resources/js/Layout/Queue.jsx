@@ -13,41 +13,68 @@ export default function Queue(queueData){
     const videoRef = useRef(null);
     const streamRef = useRef(null);
 
-useEffect(() => {
-    if (!openCamera) return;
+    useEffect(() => {
+        if (!openCamera) return;
 
-    async function startCamera() {
-        try {
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: { ideal: "environment" } },
-                audio: false,
-            });
+        async function startCamera() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: "environment" } },
+                    audio: false,
+                });
 
-            streamRef.current = stream;
+                streamRef.current = stream;
 
-            if (videoRef.current) {
-                videoRef.current.srcObject = stream;
+                if (videoRef.current) {
+                    videoRef.current.srcObject = stream;
+                }
+
+                if (openCamera === 'SCAN ID') {
+                scanInterval = setInterval(() => {
+                    if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+                        const canvas = canvasRef.current;
+                        const context = canvas.getContext("2d");
+
+                        canvas.width = videoRef.current.videoWidth;
+                        canvas.height = videoRef.current.videoHeight;
+
+                        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+
+                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+
+                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+
+                        if (code) {
+                            alert("QR Detected:", code.data);
+
+
+                            // Optionally stop scanning after first detection:
+                            // clearInterval(scanInterval);
+                        }
+                    }
+                }, 300); // scan every 300ms
             }
-        } catch (err) {
-            alert(err.name + ': ' + err.message);
+            } catch (err) {
+                alert(err.name + ': ' + err.message);
+            }
         }
-    }
 
-    startCamera();
+        startCamera();
 
-    return () => {
-        if (streamRef.current) {
-            streamRef.current.getTracks().forEach(t => t.stop());
-            streamRef.current = null;
-        }
-    };
-}, [openCamera]);
+        return () => {
+             if (scanInterval) clearInterval(scanInterval);
+            if (streamRef.current) {
+                streamRef.current.getTracks().forEach(t => t.stop());
+                streamRef.current = null;
+            }
+        };
+    }, [openCamera]);
 
 
 
     const handleScanId =(shipmentSerial)=> {
-
-        setScannedId(shipmentSerial);
+        setOpenCamera('SCAN ID');
+        // setScannedId(shipmentSerial);
     }
     const handleCancel =()=>{
         setScannedId(null);
@@ -296,31 +323,28 @@ useEffect(() => {
                 }
             </div>
             {
-                openCamera &&
+                openCamera  &&
                 <div className="photo-container">
                     <div className="photo-data">
                         <button  className="photo-click" onClick={()=>{handleCloseCamera()}}><CloseIcon size={15} color="#DE3818"/></button>
                         <div className="photo-title">
-                            <h1>CAPTURING&nbsp;{openCamera}</h1>
+                            {openCamera &&  openCamera !== 'SCAN ID' ? <h1>CAPTURING&nbsp;{openCamera}</h1>: <h1>{openCamera}</h1>}
                         </div>
                         <div className="photo-captured">
                             <div className="photo-display">
                               <video
-    ref={videoRef}
-    autoPlay
-    playsInline
-    muted          // 🔑 REQUIRED ON TABLETS
-    style={{ width: '400px', height: '400px', background: '#000' }}
-/>
+                                ref={videoRef}
+                                autoPlay
+                                playsInline
+                                muted          // 🔑 REQUIRED ON TABLETS
+                                style={{ width: '650px', height: '400px', background: '#000' }}
+                            />
                             </div>
-                            <div className="capture-container">
-                                <button className="capture-btn" >CAPTURE<CameraIcon color="#ffffff"/></button>
-                            </div>
-                        </div>
-                        <div className="photo-compiled">
-                            <div className="photo-saved">
-
-                            </div>
+                            { openCamera !== 'SCAN ID' &&
+                                <div className="capture-container">
+                                    <button className="capture-btn" >CAPTURE<CameraIcon color="#ffffff"/></button>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>
