@@ -4,6 +4,7 @@ import '../../css/tablet.css';
 import { useState ,useEffect , useRef} from "react";
 import { QRIcon ,CameraIcon ,CloseIcon} from "../SVG/ShippingLogos";
 import Webcam from "react-webcam";
+import jsQR from "jsqr";
 export default function Queue(queueData){
     const [checker , setChecker] = useState(null);
     const [scannedId , setScannedId ] = useState(null);
@@ -30,6 +31,7 @@ export default function Queue(queueData){
                 }
 
                 if (openCamera === "SCAN ID") {
+                    alert('qr');
                     scanInterval = setInterval(() => {
                         if (
                             videoRef.current.readyState ===
