@@ -65,7 +65,7 @@ export default function Queue(queueData){
                             );
 
                             if (code) {
-                                alert("QR Detected:", code.data);
+                                alert("QR Detected:", code);
 
                                 // Optional: stop scanning after first detection
                                 // clearInterval(scanInterval);
