@@ -360,13 +360,16 @@ export default function Queue(queueData){
                         </div>
                         <div className="photo-captured">
                             <div className="photo-display">
-                              <video
-                                    ref={videoRef}
-                                    autoPlay
-                                    playsInline
-                                    muted          // 🔑 REQUIRED ON TABLETS
-                                    style={{ width: '650px', height: '400px', background: '#000' }}
-                                />
+                                <div className="captured-container">
+                                    <video
+                                        ref={videoRef}
+                                        autoPlay
+                                        playsInline
+                                        muted
+                                        style={{ width: '650px', height: '400px', background: '#000' }}
+                                    />
+                                </div>
+
                                   {
                                        captureImage && <div className="captured-container">
                                   <img
