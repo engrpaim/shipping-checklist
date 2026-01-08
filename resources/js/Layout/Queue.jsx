@@ -11,6 +11,7 @@ export default function Queue(queueData){
     const [loadInvoice , setLoadInvoice] = useState([]);
     const [isPictureExist , setIsPictureExist] = useState(null);
     const [openCamera , setOpenCamera] = useState(null);
+    const [shipmentSerialSte, setShipmentSerial] = useState(null);
     const videoRef = useRef(null);
     const streamRef = useRef(null);
     const canvasRef = useRef(null);
@@ -77,6 +78,7 @@ export default function Queue(queueData){
 
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
+        setShipmentSerial(shipmentSerial);
         // setScannedId(shipmentSerial);
     }
     const handleCancel =()=>{
@@ -279,7 +281,7 @@ export default function Queue(queueData){
                                     </table>
                                 </div>
                                 {
-                                    scannedId ?
+                                    scannedId  && shipmentSerialSte.includes(key)?
                                     <div className="scan-container">
                                         <div className="loaded-container">
                                             <div>
