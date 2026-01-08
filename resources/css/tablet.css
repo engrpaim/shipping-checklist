@@ -258,6 +258,7 @@
     justify-content: center;
     width: 70rem;
     height: 25rem;
+    gap: 1rem;
 }
 .photo-title {
     margin-top: 2rem;
@@ -288,7 +289,7 @@
     width: 100%;
 }
 .captured-container {
-    width: 650px;
-    height: 400px;
+    width: 500px;
+    height: 350px;
     background: yellow;
 }
