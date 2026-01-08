@@ -215,7 +215,7 @@ export default function Queue(queueData){
                                                     data["Counted_By"]  !== null ? isCounted += data["Pallet_Number"]:null;
                                                     data["Checked_by"]  !== null ? isChecked += data["Pallet_Number"]:null;
                                                     countRow++;
-                                                    const statusScan = scannedId && scannedId.includes(key);
+                                                    const statusScan = scannedId && shipmentSerialSte.includes(key);
 
                                                     return(
                                                         <tr style={{ background: countRow % 2 === 0? '#FFFAE6':'none' }}>
@@ -232,7 +232,7 @@ export default function Queue(queueData){
                                                                     !data["Checked_by"] &&  value["Shipment_Status"] === 'BOOKED' ?
                                                                         <label className="switch">
                                                                             <input
-                                                                                type="checkbox" disabled={!( scannedId && scannedId.includes(key))} onChange={()=>{handleInvoiceLoad(invoice)}}
+                                                                                type="checkbox" disabled={!( scannedId && shipmentSerialSte.includes(key))} onChange={()=>{handleInvoiceLoad(invoice)}}
                                                                             />
                                                                             <span className="slider" ></span>
                                                                         </label>
@@ -256,7 +256,7 @@ export default function Queue(queueData){
                                                                         <input
                                                                             type="checkbox"
                                                                             onChange={()=>{handleInvoiceLoad(invoice)}}
-                                                                            disabled={!(data["Checked_by"] && scannedId && scannedId.includes(key))}
+                                                                            disabled={!(data["Checked_by"] && scannedId && shipmentSerialSte.includes(key))}
                                                                         />
                                                                         <span className="slider"></span>
                                                                     </label>:<div className="unload-container">
