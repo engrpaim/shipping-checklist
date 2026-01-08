@@ -50,7 +50,6 @@ export default function Queue(queueData){
             if (code) {
                 // This is the actual scanned QR content:
                 const name = code.data.split(";")[2];
-                alert(name)
                 setScannedId(name);
                 setOpenCamera(null);
                 // Optional: stop scanning after first detection
@@ -362,24 +361,30 @@ export default function Queue(queueData){
                         <div className="photo-captured">
                             <div className="photo-display">
                               <video
-                                ref={videoRef}
-                                autoPlay
-                                playsInline
-                                muted          // 🔑 REQUIRED ON TABLETS
-                                style={{ width: '650px', height: '400px', background: '#000' }}
-                            />
+                                    ref={videoRef}
+                                    autoPlay
+                                    playsInline
+                                    muted          // 🔑 REQUIRED ON TABLETS
+                                    style={{ width: '650px', height: '400px', background: '#000' }}
+                                />
+                                  {
+                                       captureImage && <div className="captured-container">
+                                  <img
+                                                            src={captureImage}
+                                                            alt="Captured"
+
+                                                            />
+
+                                </div>
+                                }
+                                {
+                                     openCamera !== 'SCAN ID' &&
+                                    <div >
+                                        <button className="capture-btn" onClick={()=>{handleCapture()}} ><CameraIcon size={35} color="#ffffff"/></button>
+                                    </div>
+                                }
                             </div>
                              <canvas ref={canvasRef} style={{ display: "none" }} />
-                            { openCamera !== 'SCAN ID' &&
-                                <div className="capture-container">
-                                    <button className="capture-btn" onClick={()=>{handleCapture()}} >CAPTURE<CameraIcon color="#ffffff"/></button>
-                                </div>
-                            }
-                            <div>{captureImage && <img
-        src={captureImage}
-        alt="Captured"
-        style={{ width: "200px", marginTop: "10px" }}
-    />}</div>
                         </div>
                     </div>
                 </div>
