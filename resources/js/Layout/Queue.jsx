@@ -12,7 +12,7 @@ export default function Queue(queueData){
     const [openCamera , setOpenCamera] = useState(null);
     const videoRef = useRef(null);
     const streamRef = useRef(null);
-
+    const canvasRef = useRef(null);
     useEffect(() => {
         if (!openCamera) return;
         let scanInterval = null;
@@ -29,31 +29,50 @@ export default function Queue(queueData){
                     videoRef.current.srcObject = stream;
                 }
 
-                if (openCamera === 'SCAN ID') {
-                scanInterval = setInterval(() => {
-                    if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
-                        const canvas = canvasRef.current;
-                        const context = canvas.getContext("2d");
+                if (openCamera === "SCAN ID") {
+                    scanInterval = setInterval(() => {
+                        if (
+                            videoRef.current.readyState ===
+                            videoRef.current.HAVE_ENOUGH_DATA
+                        ) {
+                            const canvas = canvasRef.current;
+                            const ctx = canvas.getContext("2d");
 
-                        canvas.width = videoRef.current.videoWidth;
-                        canvas.height = videoRef.current.videoHeight;
+                            canvas.width = videoRef.current.videoWidth;
+                            canvas.height = videoRef.current.videoHeight;
 
-                        context.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+                            ctx.drawImage(
+                                videoRef.current,
+                                0,
+                                0,
+                                canvas.width,
+                                canvas.height
+                            );
 
-                        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+                            const imageData = ctx.getImageData(
+                                0,
+                                0,
+                                canvas.width,
+                                canvas.height
+                            );
 
-                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+                            const code = jsQR(
+                                imageData.data,
+                                imageData.width,
+                                imageData.height
+                            );
 
-                        if (code) {
-                            alert("QR Detected:", code.data);
-
-
-                            // Optionally stop scanning after first detection:
-                            // clearInterval(scanInterval);
+                            if (code) {
+                                console.log("QR Detected:", code.data);
+                                setScannedId((prev) =>
+                                    prev ? [...prev, code.data] : [code.data]
+                                );
+                                // Optional: stop scanning after first detection
+                                // clearInterval(scanInterval);
+                            }
                         }
-                    }
-                }, 300); // scan every 300ms
-            }
+                    }, 300);
+                }
             } catch (err) {
                 alert(err.name + ': ' + err.message);
             }
@@ -340,6 +359,7 @@ export default function Queue(queueData){
                                 style={{ width: '650px', height: '400px', background: '#000' }}
                             />
                             </div>
+                             <canvas ref={canvasRef} style={{ display: "none" }} />
                             { openCamera !== 'SCAN ID' &&
                                 <div className="capture-container">
                                     <button className="capture-btn" >CAPTURE<CameraIcon color="#ffffff"/></button>
