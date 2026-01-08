@@ -12,7 +12,7 @@ export default function Queue(queueData){
     const [openCamera , setOpenCamera] = useState(null);
     const videoRef = useRef(null);
     const streamRef = useRef(null);
-
+    const scanInterval = useRef(null);
     useEffect(() => {
         if (!openCamera) return;
 
