@@ -83,7 +83,7 @@ export default function Queue(queueData){
     }
     const handleCancel =()=>{
         setScannedId(null);
-          setScannedId([]);
+        setShipmentSerial(null);
     }
     const handleInvoiceLoad =(invoice)=>{
 
