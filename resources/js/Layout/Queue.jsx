@@ -75,11 +75,31 @@ export default function Queue(queueData){
     }, [openCamera]);
 
 
+    const handleCapture = () => {
+    if (!videoRef.current) return;
+
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = videoRef.current.videoWidth;
+    canvas.height = videoRef.current.videoHeight;
+
+    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+
+    const imageBase64 = canvas.toDataURL("image/png");
+
+   alert("Captured image:", imageBase64);
+
+    setIsPictureExist(true);
+
+    // OPTIONAL
+    // setOpenCamera(null);
+};
 
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
-        // setScannedId(shipmentSerial);
+        setScannedId(null);
     }
     const handleCancel =()=>{
         setScannedId(null);
@@ -351,7 +371,7 @@ export default function Queue(queueData){
                              <canvas ref={canvasRef} style={{ display: "none" }} />
                             { openCamera !== 'SCAN ID' &&
                                 <div className="capture-container">
-                                    <button className="capture-btn" >CAPTURE<CameraIcon color="#ffffff"/></button>
+                                    <button className="capture-btn" onClick={()=>{handleCapture()}} >CAPTURE<CameraIcon color="#ffffff"/></button>
                                 </div>
                             }
                         </div>
