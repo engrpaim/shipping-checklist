@@ -1,7 +1,7 @@
 import { useApp } from "../Context/AppContext"
 import { router } from "@inertiajs/react";
 import '../../css/tablet.css';
-import { useEffect, useRef, useState } from 'react';
+import { useState ,useEffect , useRef} from "react";
 import { QRIcon ,CameraIcon ,CloseIcon} from "../SVG/ShippingLogos";
 import Webcam from "react-webcam";
 export default function Queue(queueData){
@@ -10,37 +10,37 @@ export default function Queue(queueData){
     const [loadInvoice , setLoadInvoice] = useState([]);
     const [isPictureExist , setIsPictureExist] = useState(null);
     const [openCamera , setOpenCamera] = useState(null);
-     const videoRef = useRef(null);
-    const [error, setError] = useState(null);
+    const videoRef = useRef(null);
 
-    useEffect(() => {
-        async function openCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({
-                    video: true,
-                    audio: false,
-                });
+useEffect(() => {
+    if (!openCamera) return;
+    alert(openCamera);
+    let stream;
 
-                if (videoRef.current) {
-                    videoRef.current.srcObject = stream;
-                }
-            } catch (err) {
-                setError('Camera access denied or not available');
-                console.error(err);
+    async function startCamera() {
+        try {
+            stream = await navigator.mediaDevices.getUserMedia({
+                video: { facingMode: { ideal: "environment" } },
+                audio: false,
+            });
+
+            if (videoRef.current) {
+                videoRef.current.srcObject = stream;
             }
+        } catch (err) {
+            alert(err.name, err.message);
         }
+    }
 
-        openCamera();
+    startCamera();
 
-        // Cleanup when leaving page
-        return () => {
-            if (videoRef.current?.srcObject) {
-                videoRef.current.srcObject
-                    .getTracks()
-                    .forEach(track => track.stop());
-            }
-        };
-    }, []);
+    return () => {
+        if (stream) {
+            stream.getTracks().forEach(track => track.stop());
+        }
+    };
+}, [openCamera]);
+
 
     const handleScanId =(shipmentSerial)=> {
 
@@ -218,13 +218,13 @@ export default function Queue(queueData){
                                                                 {
                                                                      !data["Counted_By"] &&  value["Shipment_Status"] === 'LOADING' ?
                                                                      <label className="switch">
-                                                                    <input
-                                                                        type="checkbox"
-                                                                        onChange={()=>{handleInvoiceLoad(invoice)}}
-                                                                        disabled={!(data["Checked_by"] && scannedId && scannedId.includes(key))}
-                                                                    />
-                                                                    <span className="slider"></span>
-                                                                </label>:<div className="unload-container">
+                                                                        <input
+                                                                            type="checkbox"
+                                                                            onChange={()=>{handleInvoiceLoad(invoice)}}
+                                                                            disabled={!(data["Checked_by"] && scannedId && scannedId.includes(key))}
+                                                                        />
+                                                                        <span className="slider"></span>
+                                                                    </label>:<div className="unload-container">
                                                                         <h1>{data["Counted_By"]}</h1>
                                                                        {
                                                                             value["Shipment_Status"] === 'LOADING' &&
@@ -303,11 +303,11 @@ export default function Queue(queueData){
                         <div className="photo-captured">
                             <div className="photo-display">
                                <video
-                ref={videoRef}
-                autoPlay
-                playsInline
-                style={{ width: '400px' }}
-            />
+                                    ref={videoRef}
+                                    autoPlay
+                                    playsInline
+                                    style={{ width: '400px' , height: '400px' }}
+                                />
                             </div>
                             <div className="capture-container">
                                 <button className="capture-btn" >CAPTURE<CameraIcon color="#ffffff"/></button>
