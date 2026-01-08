@@ -11,35 +11,38 @@ export default function Queue(queueData){
     const [isPictureExist , setIsPictureExist] = useState(null);
     const [openCamera , setOpenCamera] = useState(null);
     const videoRef = useRef(null);
+    const streamRef = useRef(null);
 
 useEffect(() => {
     if (!openCamera) return;
-    alert(openCamera);
-    let stream;
 
     async function startCamera() {
         try {
-            stream = await navigator.mediaDevices.getUserMedia({
+            const stream = await navigator.mediaDevices.getUserMedia({
                 video: { facingMode: { ideal: "environment" } },
                 audio: false,
             });
+
+            streamRef.current = stream;
 
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
             }
         } catch (err) {
-            alert(err.name, err.message);
+            alert(err.name + ': ' + err.message);
         }
     }
 
     startCamera();
 
     return () => {
-        if (stream) {
-            stream.getTracks().forEach(track => track.stop());
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(t => t.stop());
+            streamRef.current = null;
         }
     };
 }, [openCamera]);
+
 
 
     const handleScanId =(shipmentSerial)=> {
@@ -302,12 +305,13 @@ useEffect(() => {
                         </div>
                         <div className="photo-captured">
                             <div className="photo-display">
-                               <video
-                                    ref={videoRef}
-                                    autoPlay
-                                    playsInline
-                                    style={{ width: '400px' , height: '400px' }}
-                                />
+                              <video
+    ref={videoRef}
+    autoPlay
+    playsInline
+    muted          // 🔑 REQUIRED ON TABLETS
+    style={{ width: '400px', height: '400px', background: '#000' }}
+/>
                             </div>
                             <div className="capture-container">
                                 <button className="capture-btn" >CAPTURE<CameraIcon color="#ffffff"/></button>
