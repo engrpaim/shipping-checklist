@@ -33,45 +33,28 @@ export default function Queue(queueData){
                 if (openCamera === "SCAN ID") {
                     alert('qr');
                     scanInterval = setInterval(() => {
-                        if (
-                            videoRef.current.readyState ===
-                            videoRef.current.HAVE_ENOUGH_DATA
-                        ) {
-                            const canvas = canvasRef.current;
-                            const ctx = canvas.getContext("2d");
+        if (videoRef.current.readyState === videoRef.current.HAVE_ENOUGH_DATA) {
+            const canvas = canvasRef.current;
+            const ctx = canvas.getContext("2d");
 
-                            canvas.width = videoRef.current.videoWidth;
-                            canvas.height = videoRef.current.videoHeight;
+            canvas.width = videoRef.current.videoWidth;
+            canvas.height = videoRef.current.videoHeight;
 
-                            ctx.drawImage(
-                                videoRef.current,
-                                0,
-                                0,
-                                canvas.width,
-                                canvas.height
-                            );
+            ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-                            const imageData = ctx.getImageData(
-                                0,
-                                0,
-                                canvas.width,
-                                canvas.height
-                            );
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-                            const code = jsQR(
-                                imageData.data,
-                                imageData.width,
-                                imageData.height
-                            );
+            const code = jsQR(imageData.data, imageData.width, imageData.height);
 
-                            if (code) {
-                                alert("QR Detected:", code);
+            if (code) {
+                // This is the actual scanned QR content:
+                alert("QR Detected: " + code.data);
 
-                                // Optional: stop scanning after first detection
-                                // clearInterval(scanInterval);
-                            }
-                        }
-                    }, 300);
+                // Optional: stop scanning after first detection
+                // clearInterval(scanInterval);
+            }
+        }
+    }, 300);
                 }
             } catch (err) {
                 alert(err.name + ': ' + err.message);
