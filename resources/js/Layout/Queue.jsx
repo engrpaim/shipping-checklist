@@ -63,10 +63,8 @@ export default function Queue(queueData){
                             );
 
                             if (code) {
-                                console.log("QR Detected:", code.data);
-                                setScannedId((prev) =>
-                                    prev ? [...prev, code.data] : [code.data]
-                                );
+                                alert("QR Detected:", code.data);
+
                                 // Optional: stop scanning after first detection
                                 // clearInterval(scanInterval);
                             }
