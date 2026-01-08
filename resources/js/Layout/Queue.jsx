@@ -375,7 +375,11 @@ export default function Queue(queueData){
                                     <button className="capture-btn" onClick={()=>{handleCapture()}} >CAPTURE<CameraIcon color="#ffffff"/></button>
                                 </div>
                             }
-                            <div>{captureImage}</div>
+                            <div>{captureImage && <img
+        src={captureImage}
+        alt="Captured"
+        style={{ width: "200px", marginTop: "10px" }}
+    />}</div>
                         </div>
                     </div>
                 </div>
