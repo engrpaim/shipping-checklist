@@ -22,7 +22,10 @@ export default function Queue(queueData){
         async function startCamera() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: { ideal: "environment" } },
+                    video: {
+                                facingMode: { ideal: "environment" },
+                                focusMode: "continuous",
+                            },
                     audio: false,
                 });
 
