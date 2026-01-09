@@ -372,15 +372,14 @@ export default function Queue(queueData){
 
                                 {
 
-                                    <div className="captured-container">
-                                        {
-                                            captureImage &&
-                                            <img
-                                                src={captureImage}
-                                                alt="Captured"
-                                            />
-                                        }
-                                    </div>
+
+                                        captureImage &&
+                                        <img
+                                            src={captureImage}
+                                            alt="Captured"
+                                            style={{ width: '500px', height: '400px' }}
+                                        />
+
                                 }
                                 {
                                      openCamera !== 'SCAN ID' &&
@@ -389,7 +388,7 @@ export default function Queue(queueData){
                                     </div>
                                 }
                             </div>
-                             <canvas ref={canvasRef} style={{ dispaly:'none' , width: '500px', height: '400px' }} />
+                             <canvas ref={canvasRef} style={{ display:'none' , width: '500px', height: '400px' }} />
                         </div>
                     </div>
                 </div>
