@@ -56,7 +56,7 @@ export default function Queue(queueData){
                 // clearInterval(scanInterval);
             }
         }
-    }, 300);
+        }, 300);
                 }
             } catch (err) {
                 alert(err.name + ': ' + err.message);
@@ -76,30 +76,31 @@ export default function Queue(queueData){
 
 
     const handleCapture = () => {
-    if (!videoRef.current) return;
+        if (!videoRef.current) return;
 
-    const canvas = document.createElement("canvas");
-    const ctx = canvas.getContext("2d");
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
 
-    canvas.width = videoRef.current.videoWidth;
-    canvas.height = videoRef.current.videoHeight;
+        canvas.width = videoRef.current.videoWidth;
+        canvas.height = videoRef.current.videoHeight;
 
-    ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
+        ctx.drawImage(videoRef.current, 0, 0, canvas.width, canvas.height);
 
-    const imageBase64 = canvas.toDataURL("image/png");
+        const imageBase64 = canvas.toDataURL("image/png");
 
-   setCapturedImage(imageBase64);
+    setCapturedImage(imageBase64);
 
-    setIsPictureExist(true);
+        setIsPictureExist(true);
 
-    // OPTIONAL
-    // setOpenCamera(null);
-};
+        // OPTIONAL
+        // setOpenCamera(null);
+    };
 
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
         setScannedId(null);
+        setCapturedImage(null);
     }
     const handleCancel =()=>{
         setScannedId(null);
@@ -367,15 +368,14 @@ export default function Queue(queueData){
                                     muted
                                     style={{ width: '650px', height: '400px', background: '#000' }}
                                 />
-                                  {
-                                       captureImage && <div className="captured-container">
-                                  <img
-                                                            src={captureImage}
-                                                            alt="Captured"
-
-                                                            />
-
-                                </div>
+                                {
+                                    captureImage &&
+                                    <div className="captured-container">
+                                        <img
+                                            src={captureImage}
+                                            alt="Captured"
+                                        />
+                                    </div>
                                 }
                                 {
                                      openCamera !== 'SCAN ID' &&

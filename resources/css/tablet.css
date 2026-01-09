@@ -236,9 +236,9 @@
     align-items: center;
     flex-direction: column;
     background: #ffffff;
-    width: 90vw;
+    width: 95vw;
     height: 68vh;
-    margin: 3rem;
+    margin: 1rem 3rem 3rem 3rem;
     border-radius: 1rem;
 }
 .photo-data button {
@@ -289,6 +289,6 @@
 }
 .captured-container {
     width: 500px;
-    height: 350px;
+    height: 400px;
     background: yellow;
 }
