@@ -59,7 +59,7 @@ export default function Queue(queueData){
         }, 300);
                 }
             } catch (err) {
-                alert(err.name + ': ' + err.message);
+                //alert(err.name + ': ' + err.message);
             }
         }
 
@@ -99,8 +99,8 @@ export default function Queue(queueData){
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
-        setScannedId(null);
-        setCapturedImage(null);
+        setScannedId('try');
+        setCapturedImage('try');
     }
     const handleCancel =()=>{
         setScannedId(null);
@@ -361,20 +361,25 @@ export default function Queue(queueData){
                         </div>
                         <div className="photo-captured">
                             <div className="photo-display">
-                              <video
-                                    ref={videoRef}
-                                    autoPlay
-                                    playsInline
-                                    muted
-                                    style={{ width: '650px', height: '400px', background: '#000' }}
-                                />
+                                 <div className="captured-container">
+                                <video
+                                        ref={videoRef}
+                                        autoPlay
+                                        playsInline
+                                        muted
+                                        style={{ width: '650px', height: '400px', background: '#000' }}
+                                    />
+                                </div>
                                 {
-                                    captureImage &&
+
                                     <div className="captured-container">
-                                        <img
-                                            src={captureImage}
-                                            alt="Captured"
-                                        />
+                                        {
+                                            captureImage &&
+                                            <img
+                                                src={captureImage}
+                                                alt="Captured"
+                                            />
+                                        }
                                     </div>
                                 }
                                 {
