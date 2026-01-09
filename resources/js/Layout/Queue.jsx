@@ -55,6 +55,7 @@ export default function Queue(queueData){
                 const name = code.data.split(";")[2];
                 setScannedId(name);
                 setOpenCamera(null);
+                setIsPictureExist(true);
                 // Optional: stop scanning after first detection
                 // clearInterval(scanInterval);
             }
@@ -102,8 +103,8 @@ export default function Queue(queueData){
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
-        setScannedId('try');
-        setCapturedImage('try');
+        setScannedId(null);
+        setCapturedImage(null);
     }
     const handleCancel =()=>{
         setScannedId(null);
@@ -375,13 +376,12 @@ export default function Queue(queueData){
 
                                 {
 
-
-                                        captureImage &&
-                                        <img
-                                            src={captureImage}
-                                            alt="Captured"
-                                            style={{ width: '500px', height: '400px' }}
-                                        />
+                                    captureImage && isPictureExist &&
+                                    <img
+                                        src={captureImage}
+                                        alt="Captured"
+                                        style={{ width: '500px', height: '400px' }}
+                                    />
 
                                 }
                                 {
