@@ -367,7 +367,7 @@ export default function Queue(queueData){
                                         autoPlay
                                         playsInline
                                         muted
-                                        style={{ width: '650px', height: '400px', background: '#000' }}
+                                        style={{ width: '500px', height: '400px', background: '#000' }}
                                     />
 
                                 {
@@ -389,7 +389,7 @@ export default function Queue(queueData){
                                     </div>
                                 }
                             </div>
-                             <canvas ref={canvasRef} style={{ width: '500px', height: '400px' }} />
+                             <canvas ref={canvasRef} style={{ dispaly:'none' , width: '500px', height: '400px' }} />
                         </div>
                     </div>
                 </div>
