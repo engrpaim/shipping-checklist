@@ -367,7 +367,7 @@ export default function Queue(queueData){
                                         autoPlay
                                         playsInline
                                         muted
-                                        style={{ width: '500px', height: '400px', background: '#000' }}
+                                        style={{ width: '300px', height: '400px', background: '#000' }}
                                     />
 
                                 {
