@@ -88,7 +88,7 @@ export default function Queue(queueData){
 
         const imageBase64 = canvas.toDataURL("image/png");
 
-    setCapturedImage(imageBase64);
+        setCapturedImage(imageBase64);
 
         setIsPictureExist(true);
 
@@ -361,8 +361,8 @@ export default function Queue(queueData){
                         </div>
                         <div className="photo-captured">
                             <div className="photo-display">
-                                 <div className="captured-container">
-                                <video
+                                <div className="captured-container">
+                                    <video
                                         ref={videoRef}
                                         autoPlay
                                         playsInline
