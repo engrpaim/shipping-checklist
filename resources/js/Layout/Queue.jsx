@@ -361,7 +361,7 @@ export default function Queue(queueData){
                         </div>
                         <div className="photo-captured">
                             <div className="photo-display">
-                                <div className="captured-container">
+
                                     <video
                                         ref={videoRef}
                                         autoPlay
@@ -369,7 +369,7 @@ export default function Queue(queueData){
                                         muted
                                         style={{ width: '650px', height: '400px', background: '#000' }}
                                     />
-                                </div>
+
                                 {
 
                                     <div className="captured-container">

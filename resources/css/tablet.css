@@ -258,6 +258,7 @@
     justify-content: center;
     width: 70rem;
     height: 25rem;
+    gap: 1rem;
 }
 .photo-title {
     margin-top: 2rem;
