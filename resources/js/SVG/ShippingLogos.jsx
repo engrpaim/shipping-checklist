@@ -403,7 +403,7 @@ const CheckCircleIcon = ({ size = 24, color = "#000" }) => (
     width={size}
     height={size}
     viewBox="0 0 40 40"
-    fill={'#ffffff'}
+    fill={color}
   >
     <path d="M20,0C8.974,0,0,8.973,0,20c0,11.027,8.974,20,20,20c11.029,0,20-8.973,20-20C40,8.973,31.029,0,20,0z M28.818,17.875l-8.562,8.564c-0.596,0.595-1.377,0.893-2.158,0.893c-0.779,0-1.561-0.298-2.156-0.893l-4.758-4.758c-1.191-1.191-1.191-3.124,0-4.313c1.191-1.192,3.121-1.192,4.314,0l2.6,2.6l6.408-6.407c1.188-1.189,3.123-1.189,4.312,0C30.01,14.752,30.01,16.684,28.818,17.875z" />
   </svg>
@@ -462,6 +462,38 @@ const CloseIcon = ({ size = 24, color = "currentColor" }) => (
     <path d="M0,170l65.555-65.555L0,38.891L38.891,0l65.555,65.555L170,0l38.891,38.891l-65.555,65.555L208.891,170L170,208.891l-65.555-65.555l-65.555,65.555L0,170z" />
   </svg>
 );
+const CloseIconCirle = ({
+  size = 64,
+  bgColor = "#D75A4A",
+  strokeColor = "#FFFFFF",
+}) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    viewBox="0 0 50 50"
+    width={size}
+    height={size}
+  >
+    <circle cx="25" cy="25" r="25" fill={bgColor} />
+
+    <polyline
+      points="16,34 25,25 34,16"
+      fill="none"
+      stroke={strokeColor}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeMiterlimit="10"
+    />
+
+    <polyline
+      points="16,16 25,25 34,34"
+      fill="none"
+      stroke={strokeColor}
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeMiterlimit="10"
+    />
+  </svg>
+);
 
 export {
   CrateShippingLogo,
@@ -487,6 +519,7 @@ export {
    ForkLift,
    QRIcon,
    CameraIcon,
-   CloseIcon
+   CloseIcon,
+   CloseIconCirle
 
 };

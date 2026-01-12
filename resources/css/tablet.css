@@ -294,3 +294,28 @@
     overflow: hidden;
     background: yellow;
 }
+.photo-status {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.photo-status-data {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    justify-content: center;
+    border-radius: 1rem;
+    height: 3rem;
+    background: #fff7b8;
+    gap: 1rem;
+    box-shadow:
+        rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+        rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+}
+.photo-status-data button {
+    display: flex;
+    gap: 0.2rem;
+    background: none;
+    border: none;
+}

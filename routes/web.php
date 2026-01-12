@@ -8,6 +8,8 @@ use App\Models\Admin;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SystemNotificationMail;
+use Illuminate\Support\Facades\File;
+use Carbon\Carbon;
 //@return user details
 Route::get('/shipping-checklist/home', function (Request $request) {
     $ip = $request->ip();
@@ -35,7 +37,15 @@ Route::get('/shipping-checklist/booking', function (Request $request) {
 Route::get('/shipping-checklist/queue', function (Request $request) {
     $ip = $request->ip();
     $check = Admin::where('ip_address','=',$ip)->first();
-
+    $path = 'C:/Shipping_Check_List';
+    $currentYear = Carbon::now()->year;
+    $yearPath = $path ."/". $currentYear;
+    if(!File::exists($path)){
+        File::makeDirectory($path,0755,true);
+    }
+    if(!File::exists( $yearPath)){
+        File::makeDirectory($yearPath,0755,true);
+    }
     $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
         if(!$getAllBooked){
             return Inertia::render('Main', [
@@ -48,6 +58,7 @@ Route::get('/shipping-checklist/queue', function (Request $request) {
     }
     $displayPreview = [];
     $finalPreview = [];
+    $files = ['container.jpg', 'container.png','pallets.jpg','pallets.jpg','slip.png','slip.jpg','seal.png','seal.jpg'];
     foreach($getAllBooked as $key => $value){
         if(!$value->Shipment_Serial && !$value->Forwarder) return;
         $serial = $value->Shipment_Serial;
@@ -56,7 +67,22 @@ Route::get('/shipping-checklist/queue', function (Request $request) {
         $finalPreview [$serial]= array_merge($queueDisplay[$serial] ,  $displayPreview[$serial]);
         $getDGstatus = DataManipulationController::pullDataGrabbers($serial);
         $finalPreview [$serial]['Shipment_Status'] = $getDGstatus;
+
+        $checkingShipmentFolder = $yearPath ."/". $value->Shipment_Serial;
+
+        if(!File::exists($checkingShipmentFolder)){
+            File::makeDirectory($checkingShipmentFolder,0755,true);
+        }
+        $pictureStatus =  $checkingShipmentFolder. "/"  ;
+        foreach($files as $picture){
+            str_contains($picture,'container') ? $finalPreview[$serial]['container_picture'] = (File::exists($pictureStatus.'container.jpg')||File::exists($pictureStatus.'container.png')):null;
+            str_contains($picture,'slip') ? $finalPreview[$serial]['slip_picture'] = (File::exists($pictureStatus.'slip.jpg')||File::exists($pictureStatus.'slip.png')):null;
+            str_contains($picture,'seal') ? $finalPreview[$serial]['seal_picture'] = (File::exists($pictureStatus.'seal.jpg')||File::exists($pictureStatus.'seal.png')):null;
+            str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (File::exists($pictureStatus.'pallets.jpg')||File::exists($pictureStatus.'pallets.png')):null;
+        }
+
     }
+
     return Inertia::render('Main', [
         'appName' => config('app.name'),
         'page' => 'queue',

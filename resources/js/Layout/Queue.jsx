@@ -2,7 +2,7 @@ import { useApp } from "../Context/AppContext"
 import { router } from "@inertiajs/react";
 import '../../css/tablet.css';
 import { useState ,useEffect , useRef} from "react";
-import { QRIcon ,CameraIcon ,CloseIcon} from "../SVG/ShippingLogos";
+import { QRIcon ,CameraIcon ,CloseIcon,CheckCircleIcon,CloseIconCirle} from "../SVG/ShippingLogos";
 import Webcam from "react-webcam";
 import jsQR from "jsqr";
 export default function Queue(queueData){
@@ -103,8 +103,8 @@ export default function Queue(queueData){
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
-        setScannedId(null);
-        setCapturedImage(null);
+        setScannedId('try');
+        setCapturedImage(true);
     }
     const handleCancel =()=>{
         setScannedId(null);
@@ -308,6 +308,43 @@ export default function Queue(queueData){
                                         </tbody>
                                     </table>
                                 </div>
+                                {scannedId  && shipmentSerialSte.includes(key)?
+                                <>
+                                    <div className="photo-status">
+                                        <div className="photo-status-data">
+                                            <h1>Container</h1>
+                                            <button onClick={()=>{handleCameraOpen('CONTAINER')}}>
+                                                    Photo
+                                                {value["container_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
+                                            </button>
+                                        </div>
+                                        <div className="photo-status-data">
+                                            <h1>All Pallets</h1>
+                                            <button onClick={()=>{handleCameraOpen('ALL PALLETS')}}>
+                                                    Photo
+                                                {value["pallets_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
+
+                                            </button>
+                                        </div>
+                                        <div className="photo-status-data">
+                                            <h1>Pick Up Slip</h1>
+                                            <button onClick={()=>{handleCameraOpen('PICK UP SLIP')}}>
+                                                    Photo
+                                                {value["slip_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="photo-status">
+                                        <div className="photo-status-data">
+                                            <h1>Container Seal</h1>
+                                            <button onClick={()=>{handleCameraOpen('CONTAIENR SEAL')}}>
+                                                    Photo
+                                                {value["seal_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </>:null
+                                }
                                 {
                                     scannedId  && shipmentSerialSte.includes(key)?
                                     <div className="scan-container">
@@ -333,7 +370,6 @@ export default function Queue(queueData){
                                                 {
                                                     value["Shipment_Status"] !== 'SHIPPED' &&
                                                     <>
-                                                        <button className="camera-btn" onClick={()=>{handleCameraOpen(key)}}>CAMERA<CameraIcon color="#ffffff"/></button>
                                                         <button className="confirm-btn" onClick={()=>{handleLoad(loadInvoice,value["Shipment_Status"])}}>LOAD</button>
                                                         <button className="cancel-btn" onClick ={()=>{handleCancel()}}>CANCEL</button>
                                                     </>
@@ -350,6 +386,7 @@ export default function Queue(queueData){
                                         </div>
                                     </div>
                                 }
+
                             </div>
                         )
                     })
