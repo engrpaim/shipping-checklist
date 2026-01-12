@@ -38,14 +38,14 @@ Route::get('/shipping-checklist/queue', function (Request $request) {
     $ip = $request->ip();
     $check = Admin::where('ip_address','=',$ip)->first();
     // $path = 'C:/Shipping_Check_List';
-    $path = '/var/www/Shipping_Check_List';
+    $path = '/var/data/Shipping_Check_List';
     $currentYear = Carbon::now()->year;
     $yearPath = $path ."/". $currentYear;
     if(!File::exists($path)){
-        File::makeDirectory($path,0755,true);
+        File::makeDirectory($path,0775,true);
     }
     if(!File::exists( $yearPath)){
-        File::makeDirectory($yearPath,0755,true);
+        File::makeDirectory($yearPath,0775,true);
     }
     $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
         if(!$getAllBooked){
@@ -72,7 +72,7 @@ Route::get('/shipping-checklist/queue', function (Request $request) {
         $checkingShipmentFolder = $yearPath ."/". $value->Shipment_Serial;
 
         if(!File::exists($checkingShipmentFolder)){
-            File::makeDirectory($checkingShipmentFolder,0755,true);
+            File::makeDirectory($checkingShipmentFolder,0775,true);
         }
         $pictureStatus =  $checkingShipmentFolder. "/"  ;
         foreach($files as $picture){
