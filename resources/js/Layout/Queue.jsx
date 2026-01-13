@@ -374,7 +374,7 @@ export default function Queue(queueData){
                                                     <>
                                                         <button className="confirm-btn"
                                                                 onClick={()=>{handleLoad(loadInvoice,value["Shipment_Status"])}}
-                                                                disabled={!(scannedId &&data["Checked_by"])}>LOAD</button>
+                                                                disabled={!(scannedId===data["Checked_by"])}>LOAD</button>
                                                         <button className="cancel-btn" onClick ={()=>{handleCancel()}}>CANCEL</button>
                                                     </>
                                                 }
