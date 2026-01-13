@@ -372,7 +372,9 @@ export default function Queue(queueData){
                                                 {
                                                     value["Shipment_Status"] !== 'SHIPPED' &&
                                                     <>
-                                                        <button className="confirm-btn" onClick={()=>{handleLoad(loadInvoice,value["Shipment_Status"])}}>LOAD</button>
+                                                        <button className="confirm-btn"
+                                                                onClick={()=>{handleLoad(loadInvoice,value["Shipment_Status"])}}
+                                                                disabled={!(scannedId &&data["Checked_by"])}>LOAD</button>
                                                         <button className="cancel-btn" onClick ={()=>{handleCancel()}}>CANCEL</button>
                                                     </>
                                                 }
