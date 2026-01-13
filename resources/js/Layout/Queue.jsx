@@ -103,7 +103,7 @@ export default function Queue(queueData){
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
-        setScannedId('try');
+        setScannedId(null);
         setCapturedImage(null);
     }
     const handleCancel =()=>{
