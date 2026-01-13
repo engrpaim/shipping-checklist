@@ -125,6 +125,7 @@ export default function Queue(queueData){
     }
     const handleCloseCamera=(shipment)=>{
         setOpenCamera(null);
+         setCapturedImage(null);
     }
     const handleDatagrabber =(ShipmentSerial , status)=>{
         console.log('Updating: ....',ShipmentSerial);
