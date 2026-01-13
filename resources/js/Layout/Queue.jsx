@@ -103,7 +103,7 @@ export default function Queue(queueData){
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
-        setScannedId(null);
+        setScannedId('try');
         setCapturedImage(null);
     }
     const handleCancel =()=>{
@@ -157,9 +157,7 @@ export default function Queue(queueData){
 
     };
 
-    const handleUpload=()=>{
 
-    }
 
     const handleUnload=(invoice,column)=>{
         if(!invoice && !loadInvoice) return;
@@ -429,7 +427,7 @@ export default function Queue(queueData){
                                     openCamera !== 'SCAN ID' &&
                                     <div >
                                         <button className="capture-btn" onClick={()=>{handleCapture()}} ><CameraIcon size={35} color="#ffffff"/></button>
-                                        <button className="save-btn"  onClick={()=>{handleUpload()}}><UploadIcon size={35} color="#ffffff" /></button>
+                                        <button className="save-btn"><UploadIcon size={35} color="#ffffff"/></button>
                                     </div>
                                 }
                             </div>
