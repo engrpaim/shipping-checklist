@@ -296,7 +296,7 @@ export default function Queue(queueData){
                                                                                 onClick={()=>{handleUnload(invoice,'Counted_By')}}
                                                                                 disabled={!(statusScan)}
                                                                                 style ={{ background: !statusScan ? 'gray':null }}
-                                                                                {...data["Checked_by"]  === scannedId && disabled}>Unload</button>
+                                                                                >Unload</button>
                                                                        }
                                                                     </div>
 
@@ -424,10 +424,10 @@ export default function Queue(queueData){
 
                                 }
                                 {
-                                    openCamera !== 'SCAN ID' &&
-                                    <div >
+                                     openCamera !== 'SCAN ID' &&
+                                    <div>
                                         <button className="capture-btn" onClick={()=>{handleCapture()}} ><CameraIcon size={35} color="#ffffff"/></button>
-                                        <button className="save-btn"><UploadIcon size={35} color="#ffffff"/></button>
+                                        <button className="capture-btn" onClick={()=>{handleCapture()}} ><UploadIcon size={35} color="#ffffff"/></button>
                                     </div>
                                 }
                             </div>
