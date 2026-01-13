@@ -263,7 +263,8 @@
 .photo-title {
     margin-top: 2rem;
 }
-.photo-captured button {
+
+button.capture-btn {
     display: flex;
     padding: 2rem;
     border-radius: 3rem;
@@ -278,11 +279,23 @@
         rgba(0, 0, 0, 0.17) 0px 12px 13px,
         rgba(0, 0, 0, 0.09) 0px -3px 5px;
 }
-.capture-btn {
+
+button.save-btn {
     display: flex;
-    justify-content: self-end;
-    background: red;
+    padding: 2rem;
+    border-radius: 3rem;
+    margin: 0.5rem;
+    background: #2776f5;
+    color: white;
+    gap: 1rem;
+    box-shadow:
+        rgba(0, 0, 0, 0.25) 0px 54px 55px,
+        rgba(0, 0, 0, 0.12) 0px -12px 30px,
+        rgba(0, 0, 0, 0.12) 0px 4px 6px,
+        rgba(0, 0, 0, 0.17) 0px 12px 13px,
+        rgba(0, 0, 0, 0.09) 0px -3px 5px;
 }
+
 .capture-container {
     display: flex;
     justify-content: end;

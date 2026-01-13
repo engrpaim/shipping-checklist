@@ -2,7 +2,7 @@ import { useApp } from "../Context/AppContext"
 import { router } from "@inertiajs/react";
 import '../../css/tablet.css';
 import { useState ,useEffect , useRef} from "react";
-import { QRIcon ,CameraIcon ,CloseIcon,CheckCircleIcon,CloseIconCirle} from "../SVG/ShippingLogos";
+import { QRIcon ,CameraIcon ,CloseIcon,CheckCircleIcon,CloseIconCirle,UploadIcon} from "../SVG/ShippingLogos";
 import Webcam from "react-webcam";
 import jsQR from "jsqr";
 export default function Queue(queueData){
@@ -113,9 +113,9 @@ export default function Queue(queueData){
     const handleInvoiceLoad =(invoice)=>{
 
         setLoadInvoice((prev)=>
-                prev.includes(invoice) ?
-                prev.filter((item)=> item !== invoice):
-                [...prev,invoice]
+            prev.includes(invoice) ?
+            prev.filter((item)=> item !== invoice):
+            [...prev,invoice]
         )
 
     }
@@ -157,7 +157,10 @@ export default function Queue(queueData){
 
     };
 
-
+    const handleUpload=()=>{
+        if(captureImage && openCamera) return;
+        alert('Photo name: ',captureImage,' Captured: ',openCamera);
+    }
 
     const handleUnload=(invoice,column)=>{
         if(!invoice && !loadInvoice) return;
@@ -295,7 +298,8 @@ export default function Queue(queueData){
                                                                             <button
                                                                                 onClick={()=>{handleUnload(invoice,'Counted_By')}}
                                                                                 disabled={!(statusScan)}
-                                                                                style ={{ background: !statusScan ? 'gray':null }}>Unload</button>
+                                                                                style ={{ background: !statusScan ? 'gray':null }}
+                                                                                {...data["Checked_by"]  === scannedId && disabled}>Unload</button>
                                                                        }
                                                                     </div>
 
@@ -423,13 +427,14 @@ export default function Queue(queueData){
 
                                 }
                                 {
-                                     openCamera !== 'SCAN ID' &&
+                                    openCamera !== 'SCAN ID' &&
                                     <div >
                                         <button className="capture-btn" onClick={()=>{handleCapture()}} ><CameraIcon size={35} color="#ffffff"/></button>
+                                        <button className="save-btn"  onClick={()=>{handleUpload()}}><UploadIcon size={35} color="#ffffff" /></button>
                                     </div>
                                 }
                             </div>
-                             <canvas ref={canvasRef} style={{ display:'none' , width: '500px', height: '400px' }} />
+                            <canvas ref={canvasRef} style={{ display:'none' , width: '500px', height: '400px' }} />
                         </div>
                     </div>
                 </div>
