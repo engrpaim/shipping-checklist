@@ -294,8 +294,8 @@ export default function Queue(queueData){
                                                                             value["Shipment_Status"] === 'LOADING' &&
                                                                             <button
                                                                                 onClick={()=>{handleUnload(invoice,'Counted_By')}}
-                                                                                disabled={!(data["Checked_by"] !== scannedId)}
-                                                                                style ={{ background: data["Checked_by"] === scannedId? 'gray':null }}
+                                                                                disabled={!(statusScan && data["Checked_by"] !== scannedId)}
+                                                                                style ={{ background: !statusScan && data["Checked_by"] === scannedId? 'gray':null }}
                                                                                 >Unload</button>
                                                                        }
                                                                     </div>
