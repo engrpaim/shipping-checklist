@@ -159,7 +159,7 @@ export default function Queue(queueData){
 
     const handleUpload=()=>{
         if(captureImage && openCamera) return;
-        alert('Photo name: ',captureImage,' Captured: ',openCamera);
+        alert('Photo name: '+captureImage+' Captured: '+openCamera);
     }
 
     const handleUnload=(invoice,column)=>{
