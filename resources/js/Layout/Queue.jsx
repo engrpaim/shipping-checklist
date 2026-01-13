@@ -285,7 +285,7 @@ export default function Queue(queueData){
                                                                         <input
                                                                             type="checkbox"
                                                                             onChange={()=>{handleInvoiceLoad(invoice)}}
-                                                                            disabled={!(data["Checked_by"] && scannedId && shipmentSerialSte.includes(key))}
+                                                                            disabled={!(data["Checked_by"] !== scannedId)}
                                                                         />
                                                                         <span className="slider"></span>
                                                                     </label>:<div className="unload-container">
