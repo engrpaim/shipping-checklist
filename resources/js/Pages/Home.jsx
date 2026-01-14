@@ -22,7 +22,7 @@ export default function Home(){
     const currentUrl = window.location.pathname.split('/').filter(Boolean).pop() || 'home';
     const cpitalizedFirstLetter = currentUrl.charAt(0).toUpperCase()+currentUrl.slice(1);
     const bookingView = ['booking','save'];
-    const loadingView = ['queue','mc','mcu','mcups'];
+    const loadingView = ['queue','mc','mcu','mcups','photo'];
 
     const [messageDetails ,setMessageDetails] = useState(null);
     const [NotificationMessage , setNotification] = useState(null);
