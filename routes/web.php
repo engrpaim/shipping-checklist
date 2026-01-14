@@ -120,7 +120,7 @@ Route::get('/shipping-checklist/queue', function (Request $request) {
         }
 
     }
-
+dd( $finalPreview);
     return Inertia::render('Main', [
         'appName' => config('app.name'),
         'page' => 'queue',
