@@ -10,6 +10,7 @@ use Exception;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\Data_Grabbers;
+use Illuminate\Support\Facades\File;
 class DataManipulationController extends Controller
 {
 
@@ -394,11 +395,11 @@ class DataManipulationController extends Controller
         $path = '/var/data/Shipping_Check_List';
         $year =  $path  ."/".  now()->year."/". $serial;
         // Ensure directory exists
-        if (!file_exists($path)) {
+        if (!File::exists($path)) {
             mkdir($path, 0755, true);
         }
 
-        if(!file_exists( $year )){
+        if(!File::exists( $year )){
             mkdir($year, 0755, true);
         }
 
@@ -435,7 +436,7 @@ class DataManipulationController extends Controller
         ]);
     }
 
-
+        $displayPreview = [];
     $finalPreview = [];
     $files = ['container.jpg', 'container.png','pallets.jpg','pallets.jpg','slip.png','slip.jpg','seal.png','seal.jpg'];
     foreach($getAllBooked as $key => $value){
@@ -451,10 +452,10 @@ class DataManipulationController extends Controller
 
         $pictureStatus =  $checkingShipmentFolder. "/"  ;
         foreach($files as $picture){
-            str_contains($picture,'container') ? $finalPreview[$serial]['container_picture'] = (file_exists($pictureStatus.'container.jpg')||file_exists($pictureStatus.'container.png')):null;
-            str_contains($picture,'slip') ? $finalPreview[$serial]['slip_picture'] = (file_exists($pictureStatus.'slip.jpg')||file_exists($pictureStatus.'slip.png')):null;
-            str_contains($picture,'seal') ? $finalPreview[$serial]['seal_picture'] = (file_exists($pictureStatus.'seal.jpg')||file_exists($pictureStatus.'seal.png')):null;
-            str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (file_exists($pictureStatus.'pallets.jpg')||file_exists($pictureStatus.'pallets.png')):null;
+            str_contains($picture,'container') ? $finalPreview[$serial]['container_picture'] = (File::exists($pictureStatus.'container.jpg')||File::exists($pictureStatus.'container.png')):null;
+            str_contains($picture,'slip') ? $finalPreview[$serial]['slip_picture'] = (File::exists($pictureStatus.'slip.jpg')||File::exists($pictureStatus.'slip.png')):null;
+            str_contains($picture,'seal') ? $finalPreview[$serial]['seal_picture'] = (File::exists($pictureStatus.'seal.jpg')||File::exists($pictureStatus.'seal.png')):null;
+            str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (File::exists($pictureStatus.'pallets.jpg')||File::exists($pictureStatus.'pallets.png')):null;
         }
 
     }
