@@ -382,6 +382,8 @@ class DataManipulationController extends Controller
 
     public function uploadPhoto(Request $request)
     {
+              $ip = $request->ip();
+        $check = Admin::where('ip_address','=',$ip)->first();
         $request->validate([
             'photo' => 'required|string',      // base64 string
             'photo_name' => 'required|string',
@@ -421,11 +423,36 @@ class DataManipulationController extends Controller
         $filePath = $year . '/' . $fileName;
 
         file_put_contents($filePath, $imageData);
+        $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
+        if(!$getAllBooked){
+                return Inertia::render('Main', [
+                'appName' => config('app.name'),
+                'page' => 'queue',
+                'queue' =>  null,
+                'client_ip' => $check->ip_address?? null,
+                'client_details' => $check ?? null
+            ]);
+        }
 
-        return response()->json([
-            'success' => true,
-            'file' => $fileName,
-            'path' => $filePath
+        $displayPreview = [];
+        $finalPreview = [];
+        foreach($getAllBooked as $key => $value){
+            if(!$value->Shipment_Serial && !$value->Forwarder) return;
+            $serial = $value->Shipment_Serial;
+            $displayPreview [$serial]['Forwarder']=$value->Forwarder;
+            $queueDisplay = DataManipulationController::pullDataBooking($serial);
+            $finalPreview [$serial]= array_merge($queueDisplay[$serial] ,  $displayPreview[$serial]);
+
+            $getDGstatus = DataManipulationController::pullDataGrabbers($serial);
+            $finalPreview [$serial]['Shipment_Status'] = $getDGstatus;
+
+        }
+        return Inertia::render('Main', [
+            'appName' => config('app.name'),
+            'page' => 'queue',
+            'queue' =>  $finalPreview,
+            'client_ip' => $check->ip_address?? null,
+            'client_details' => $check ?? null
         ]);
     }
 
