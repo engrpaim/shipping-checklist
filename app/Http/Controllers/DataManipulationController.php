@@ -434,15 +434,29 @@ class DataManipulationController extends Controller
             'client_details' => $check ?? null
         ]);
     }
-    $displayPreview = [];
+
+
     $finalPreview = [];
     $files = ['container.jpg', 'container.png','pallets.jpg','pallets.jpg','slip.png','slip.jpg','seal.png','seal.jpg'];
-    $pictureStatus =  $year. "/"  ;
-    foreach($files as $picture){
-        str_contains($picture,'container') ? $finalPreview[$serial]['container_picture'] = (file_exists($pictureStatus.'container.jpg')||file_exists($pictureStatus.'container.png')):null;
-        str_contains($picture,'slip') ? $finalPreview[$serial]['slip_picture'] = (file_exists($pictureStatus.'slip.jpg')||file_exists($pictureStatus.'slip.png')):null;
-        str_contains($picture,'seal') ? $finalPreview[$serial]['seal_picture'] = (file_exists($pictureStatus.'seal.jpg')||file_exists($pictureStatus.'seal.png')):null;
-        str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (file_exists($pictureStatus.'pallets.jpg')||file_exists($pictureStatus.'pallets.png')):null;
+    foreach($getAllBooked as $key => $value){
+        if(!$value->Shipment_Serial && !$value->Forwarder) return;
+        $serial = $value->Shipment_Serial;
+        $displayPreview [$serial]['Forwarder']=$value->Forwarder;
+        $queueDisplay = DataManipulationController::pullDataBooking($serial);
+        $finalPreview [$serial]= array_merge($queueDisplay[$serial] ,  $displayPreview[$serial]);
+        $getDGstatus = DataManipulationController::pullDataGrabbers($serial);
+        $finalPreview [$serial]['Shipment_Status'] = $getDGstatus;
+
+        $checkingShipmentFolder = $path  ."/".  now()->year ."/". $value->Shipment_Serial;
+
+        $pictureStatus =  $checkingShipmentFolder. "/"  ;
+        foreach($files as $picture){
+            str_contains($picture,'container') ? $finalPreview[$serial]['container_picture'] = (file_exists($pictureStatus.'container.jpg')||file_exists($pictureStatus.'container.png')):null;
+            str_contains($picture,'slip') ? $finalPreview[$serial]['slip_picture'] = (file_exists($pictureStatus.'slip.jpg')||file_exists($pictureStatus.'slip.png')):null;
+            str_contains($picture,'seal') ? $finalPreview[$serial]['seal_picture'] = (file_exists($pictureStatus.'seal.jpg')||file_exists($pictureStatus.'seal.png')):null;
+            str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (file_exists($pictureStatus.'pallets.jpg')||file_exists($pictureStatus.'pallets.png')):null;
+        }
+
     }
 
 
