@@ -456,6 +456,41 @@ class DataManipulationController extends Controller
             str_contains($picture,'slip') ? $finalPreview[$serial]['slip_picture'] = (File::exists($pictureStatus.'slip.jpg')||File::exists($pictureStatus.'slip.png')):null;
             str_contains($picture,'seal') ? $finalPreview[$serial]['seal_picture'] = (File::exists($pictureStatus.'seal.jpg')||File::exists($pictureStatus.'seal.png')):null;
             str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (File::exists($pictureStatus.'pallets.jpg')||File::exists($pictureStatus.'pallets.png')):null;
+
+             if (str_contains($picture, 'container')) {
+                $finalPreview[$serial]['container_picture'] = File::exists($pictureStatus.'container.jpg')
+                    ? '/shipping-image/container.jpg'
+                    : (File::exists($pictureStatus.'container.png')
+                        ? '/shipping-image/container.png'
+                        : null);
+            }
+
+            // Slip picture
+            if (str_contains($picture, 'slip')) {
+                $finalPreview[$serial]['slip_picture'] = File::exists($pictureStatus.'slip.jpg')
+                    ? '/shipping-image/slip.jpg'
+                    : (File::exists($pictureStatus.'slip.png')
+                        ? '/shipping-image/slip.png'
+                        : null);
+            }
+
+            // Seal picture
+            if (str_contains($picture, 'seal')) {
+                $finalPreview[$serial]['seal_picture'] = File::exists($pictureStatus.'seal.jpg')
+                    ? '/shipping-image/seal.jpg'
+                    : (File::exists($pictureStatus.'seal.png')
+                        ? '/shipping-image/seal.png'
+                        : null);
+            }
+
+            // Pallets picture
+            if (str_contains($picture, 'pallets')) {
+                $finalPreview[$serial]['pallets_picture'] = File::exists($pictureStatus.'pallets.jpg')
+                    ? '/shipping-image/pallets.jpg'
+                    : (File::exists($pictureStatus.'pallets.png')
+                        ? '/shipping-image/pallets.png'
+                        : null);
+            }
         }
 
     }

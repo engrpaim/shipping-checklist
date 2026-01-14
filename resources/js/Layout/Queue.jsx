@@ -346,8 +346,6 @@ export default function Queue(queueData){
                                                 {value["slip_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
                                             </button>
                                         </div>
-                                    </div>
-                                    <div className="photo-status">
                                         <div className="photo-status-data">
                                             <h1>Container Seal</h1>
                                             <button onClick={()=>{handleCameraOpen('seal')}}>
@@ -355,6 +353,9 @@ export default function Queue(queueData){
                                                 {value["seal_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
                                             </button>
                                         </div>
+                                    </div>
+                                    <div className="photo-status">
+                                        {value["pallets_picture"]  && <img src={value["pallets_picture"]} alt="Pallets" />}
                                     </div>
                                 </>:null
                                 }
