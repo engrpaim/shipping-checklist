@@ -383,7 +383,7 @@ class DataManipulationController extends Controller
     public function uploadPhoto(Request $request)
     {
         $request->validate([
-            'photo' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'photo' => 'required|image|mimes:jpg,jpeg,png',
             'photo_name' => 'required|string',
             'captured' => 'required|boolean',
         ]);
@@ -391,8 +391,10 @@ class DataManipulationController extends Controller
         $path = '/var/data/Shipping_Check_List';
 
         $file = $request->file('photo');
-        $fileName = time().'_'.$request->photo_name.'.'.$file->getClientOriginalExtension();
 
+
+        $fileName = time().'_'.$request->photo_name.'.'.$file->getClientOriginalExtension();
+        dump($fileName);
         $file->move($path, $fileName);
 
         return back()->with('success', 'Photo uploaded');
