@@ -355,7 +355,7 @@ export default function Queue(queueData){
                                         </div>
                                     </div>
                                     <div className="photo-status">
-                                        {value["pallets_picture"]  && <img src={value["pallets_picture"]} alt="Pallets" />}
+                                        {value["pallets_image"]  && <img src={value["pallets_image"]} alt="Pallets" />}
                                     </div>
                                 </>:null
                                 }
