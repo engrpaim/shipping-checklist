@@ -382,6 +382,7 @@ class DataManipulationController extends Controller
 
     public function uploadPhoto(Request $request)
     {
+        dd( $request->all());
         $request->validate([
             'photo' => 'required|image|mimes:jpg,jpeg,png',
             'photo_name' => 'required|string',
@@ -397,7 +398,7 @@ class DataManipulationController extends Controller
         dd($fileName);
         $file->move($path, $fileName);
 
-        return back()->with('success', 'Photo uploaded');
+
     }
 }
 
