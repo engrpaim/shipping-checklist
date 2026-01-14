@@ -381,48 +381,53 @@ class DataManipulationController extends Controller
     }
 
     public function uploadPhoto(Request $request)
-{
-    $request->validate([
-        'photo' => 'required|string',      // base64 string
-        'photo_name' => 'required|string',
-        'captured_by' => 'required|string',
-    ]);
-    dd($request->all());
-    $path = '/var/data/Shipping_Check_List';
+    {
+        $request->validate([
+            'photo' => 'required|string',      // base64 string
+            'photo_name' => 'required|string',
+            'captured_by' => 'required|string',
+            'serial'=>'required|string'
+        ]);
 
-    // Ensure directory exists
-    if (!file_exists($path)) {
-        mkdir($path, 0755, true);
+        $path = '/var/data/Shipping_Check_List';
+        $year =  $path  ."/".  now()->year;
+        // Ensure directory exists
+        if (!file_exists($path)) {
+            mkdir($path, 0755, true);
+        }
+
+        if(!file_exists( $year )){
+            mkdir($year, 0755, true);
+        }
+
+        $image = $request->photo;
+
+        // Remove base64 header
+        if (preg_match('/^data:image\/(\w+);base64,/', $image, $type)) {
+            $image = substr($image, strpos($image, ',') + 1);
+            $extension = strtolower($type[1]); // jpg, png
+        } else {
+            return response()->json(['error' => 'Invalid image format'], 422);
+        }
+
+        $image = str_replace(' ', '+', $image);
+        $imageData = base64_decode($image);
+
+        if ($imageData === false) {
+            return response()->json(['error' => 'Base64 decode failed'], 422);
+        }
+
+        $fileName = $request->photo_name . '.' . $extension;
+        $filePath = $year . '/' . $fileName;
+
+        file_put_contents($filePath, $imageData);
+
+        return response()->json([
+            'success' => true,
+            'file' => $fileName,
+            'path' => $filePath
+        ]);
     }
-
-    $image = $request->photo;
-
-    // Remove base64 header
-    if (preg_match('/^data:image\/(\w+);base64,/', $image, $type)) {
-        $image = substr($image, strpos($image, ',') + 1);
-        $extension = strtolower($type[1]); // jpg, png
-    } else {
-        return response()->json(['error' => 'Invalid image format'], 422);
-    }
-
-    $image = str_replace(' ', '+', $image);
-    $imageData = base64_decode($image);
-
-    if ($imageData === false) {
-        return response()->json(['error' => 'Base64 decode failed'], 422);
-    }
-
-    $fileName = $request->photo_name . '.' . $extension;
-    $filePath = $path . '/' . $fileName;
-
-    file_put_contents($filePath, $imageData);
-
-    return response()->json([
-        'success' => true,
-        'file' => $fileName,
-        'path' => $filePath
-    ]);
-}
 
 }
 
