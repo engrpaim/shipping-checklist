@@ -79,9 +79,7 @@ export default function Queue(queueData){
     }, [openCamera]);
 
    const handleUpload = (image, photoName) => {
-        alert(`Is exist? ${image !== null}`);
-        alert(`Photo name: ${photoName}`);
-
+        setOpenCamera(null);
         router.visit("/shipping-checklist/queue/photo", {
             method: "post",
             data: {
