@@ -381,24 +381,48 @@ class DataManipulationController extends Controller
     }
 
     public function uploadPhoto(Request $request)
-    {
-        dd( $request->all());
-        $request->validate([
-            'photo' => 'required|image|mimes:jpg,jpeg,png',
-            'photo_name' => 'required|string',
-            'captured' => 'required|boolean',
-        ]);
+{
+    $request->validate([
+        'photo' => 'required|string',      // base64 string
+        'photo_name' => 'required|string',
+        'captured_by' => 'required|string',
+    ]);
 
-        $path = '/var/data/Shipping_Check_List';
+    $path = '/var/data/Shipping_Check_List';
 
-        $file = $request->file('photo');
-
-
-        $fileName = time().'_'.$request->photo_name.'.'.$file->getClientOriginalExtension();
-        dd($fileName);
-        $file->move($path, $fileName);
-
-
+    // Ensure directory exists
+    if (!file_exists($path)) {
+        mkdir($path, 0755, true);
     }
+
+    $image = $request->photo;
+
+    // Remove base64 header
+    if (preg_match('/^data:image\/(\w+);base64,/', $image, $type)) {
+        $image = substr($image, strpos($image, ',') + 1);
+        $extension = strtolower($type[1]); // jpg, png
+    } else {
+        return response()->json(['error' => 'Invalid image format'], 422);
+    }
+
+    $image = str_replace(' ', '+', $image);
+    $imageData = base64_decode($image);
+
+    if ($imageData === false) {
+        return response()->json(['error' => 'Base64 decode failed'], 422);
+    }
+
+    $fileName = time() . '_' . $request->photo_name . '.' . $extension;
+    $filePath = $path . '/' . $fileName;
+
+    file_put_contents($filePath, $imageData);
+
+    return response()->json([
+        'success' => true,
+        'file' => $fileName,
+        'path' => $filePath
+    ]);
+}
+
 }
 

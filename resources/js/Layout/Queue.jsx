@@ -78,22 +78,21 @@ export default function Queue(queueData){
         };
     }, [openCamera]);
 
-    const handleUpload =(image, photoName)=>{
-        alert('Is exist? '+image !== null?true:false);
-        alert('Photo name: '+photoName);
-        const formData = new FormData();
+   const handleUpload = (image, photoName) => {
+        alert(`Is exist? ${image !== null}`);
+        alert(`Photo name: ${photoName}`);
 
-        formData.append("photo",image);
-        formData.append("photo_name",photoName);
-        formData.append("captured_by",scannedId);
-
-        router.visit("/shipping-checklist/queue/photo",{
-            method:"post",
-            data:formData,
-            forceFormData:true,
-            preserveScroll:true
+        router.visit("/shipping-checklist/queue/photo", {
+            method: "post",
+            data: {
+                photo: image, // base64 string
+                photo_name: photoName,
+                captured_by: scannedId,
+            },
+            preserveScroll: true,
+            preserveState:true
         });
-    }
+    };
     const handleCapture = () => {
         if (!videoRef.current) return;
 
