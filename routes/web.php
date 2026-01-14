@@ -104,4 +104,4 @@ Route::get('/shipping-checklist/queuers', function () {
 Route::post('/shipping-checklist/queue/mc',[DataManipulationController::class,'loadInvoice']);
 Route::post('/shipping-checklist/queue/mcu',[DataManipulationController::class,'unLoadInvoice']);
 Route::post('/shipping-checklist/queue/mcups',[DataManipulationController::class,'updateStatus']);
-Route::post('/shipping-checklist/queue/photo',[DataManipulationController::class,'uploadData']);
+Route::post('/shipping-checklist/queue/photo',[DataManipulationController::class,'uploadPhoto']);
