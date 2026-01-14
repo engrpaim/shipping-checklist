@@ -387,7 +387,7 @@ class DataManipulationController extends Controller
         'photo_name' => 'required|string',
         'captured_by' => 'required|string',
     ]);
-
+    dd($request->all());
     $path = '/var/data/Shipping_Check_List';
 
     // Ensure directory exists
@@ -412,7 +412,7 @@ class DataManipulationController extends Controller
         return response()->json(['error' => 'Base64 decode failed'], 422);
     }
 
-    $fileName = time() . '_' . $request->photo_name . '.' . $extension;
+    $fileName = $request->photo_name . '.' . $extension;
     $filePath = $path . '/' . $fileName;
 
     file_put_contents($filePath, $imageData);
