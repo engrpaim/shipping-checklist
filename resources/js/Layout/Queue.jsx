@@ -78,7 +78,22 @@ export default function Queue(queueData){
         };
     }, [openCamera]);
 
+    const handleUpload =(image, photoName)=>{
+        alert('Is exist? '+image !== null?true:false);
+        alert('Photo name: '+photoName);
+        const formData = new FormData();
 
+        formData.append("photo",image);
+        formData.append("photo_name",photoName);
+        formData.append("captured_by",scannedId);
+
+        router.visit("/shipping-checklist/queue/photo",{
+            method:"post",
+            data:formData,
+            forceFormData:true,
+            preserveScroll:true
+        });
+    }
     const handleCapture = () => {
         if (!videoRef.current) return;
 
@@ -103,7 +118,7 @@ export default function Queue(queueData){
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
-        setScannedId(null);
+        setScannedId('try');
         setCapturedImage(null);
     }
     const handleCancel =()=>{
@@ -153,8 +168,6 @@ export default function Queue(queueData){
             preserveState: true,
             preserveScroll: true,
         });
-
-
     };
 
 
@@ -315,14 +328,14 @@ export default function Queue(queueData){
                                     <div className="photo-status">
                                         <div className="photo-status-data">
                                             <h1>Container</h1>
-                                            <button onClick={()=>{handleCameraOpen('CONTAINER')}}>
+                                            <button onClick={()=>{handleCameraOpen('container')}}>
                                                     Photo
                                                 {value["container_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
                                             </button>
                                         </div>
                                         <div className="photo-status-data">
                                             <h1>All Pallets</h1>
-                                            <button onClick={()=>{handleCameraOpen('ALL PALLETS')}}>
+                                            <button onClick={()=>{handleCameraOpen('pallets')}}>
                                                     Photo
                                                 {value["pallets_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
 
@@ -330,7 +343,7 @@ export default function Queue(queueData){
                                         </div>
                                         <div className="photo-status-data">
                                             <h1>Pick Up Slip</h1>
-                                            <button onClick={()=>{handleCameraOpen('PICK UP SLIP')}}>
+                                            <button onClick={()=>{handleCameraOpen('slip')}}>
                                                     Photo
                                                 {value["slip_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
                                             </button>
@@ -339,7 +352,7 @@ export default function Queue(queueData){
                                     <div className="photo-status">
                                         <div className="photo-status-data">
                                             <h1>Container Seal</h1>
-                                            <button onClick={()=>{handleCameraOpen('CONTAIENR SEAL')}}>
+                                            <button onClick={()=>{handleCameraOpen('seal')}}>
                                                     Photo
                                                 {value["seal_picture"]?<CheckCircleIcon color={'#2fca49'}/> :<CloseIconCirle size={24} bgColor={'#FB2C36'}/>}
                                             </button>
@@ -428,7 +441,7 @@ export default function Queue(queueData){
                                      openCamera !== 'SCAN ID' &&
                                     <div>
                                         <button className="capture-btn" onClick={()=>{handleCapture()}} ><CameraIcon size={35} color="#ffffff"/></button>
-                                        <button className="capture-btn" onClick={()=>{handleCapture()}} ><UploadIcon size={35} color="#ffffff"/></button>
+                                        <button className="save-btn" onClick={()=>{handleUpload(captureImage ,openCamera)}} ><UploadIcon size={35} color="#ffffff"/></button>
                                     </div>
                                 }
                             </div>

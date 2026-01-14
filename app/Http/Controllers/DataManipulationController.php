@@ -379,5 +379,23 @@ class DataManipulationController extends Controller
             'client_details' => $check ?? null
         ]);
     }
+
+    public function uploadPhoto(Request $request)
+    {
+        $request->validate([
+            'photo' => 'required|image|mimes:jpg,jpeg,png|max:5120',
+            'photo_name' => 'required|string',
+            'captured' => 'required|boolean',
+        ]);
+
+        $path = '/var/data/Shipping_Check_List';
+
+        $file = $request->file('photo');
+        $fileName = time().'_'.$request->photo_name.'.'.$file->getClientOriginalExtension();
+
+        $file->move($path, $fileName);
+
+        return back()->with('success', 'Photo uploaded');
+    }
 }
 
