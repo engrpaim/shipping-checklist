@@ -88,6 +88,7 @@ export default function Queue(queueData){
                 photo: image, // base64 string
                 photo_name: photoName,
                 captured_by: scannedId,
+                serial:shipmentSerialSte
             },
             preserveScroll: true,
             preserveState:true
