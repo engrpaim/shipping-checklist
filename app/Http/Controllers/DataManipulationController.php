@@ -458,7 +458,7 @@ class DataManipulationController extends Controller
             str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (File::exists($pictureStatus.'pallets.jpg')||File::exists($pictureStatus.'pallets.png')):null;
 
              if (str_contains($picture, 'container')) {
-                $finalPreview[$serial]['container_picture'] = File::exists($pictureStatus.'container.jpg')
+                $finalPreview[$serial]['container_image'] = File::exists($pictureStatus.'container.jpg')
                     ? $pictureStatus.'container.jpg'
                     : (File::exists($pictureStatus.'container.png')
                         ? $pictureStatus.'container.png'
@@ -467,8 +467,8 @@ class DataManipulationController extends Controller
 
             // Slip picture
             if (str_contains($picture, 'slip')) {
-                $finalPreview[$serial]['slip_picture'] = File::exists($pictureStatus.'slip.jpg')
-                    ? $pictureStatus.'pallets.jpg'
+                $finalPreview[$serial]['slip_image'] = File::exists($pictureStatus.'slip.jpg')
+                    ? $pictureStatus.'slip.jpg'
                     : (File::exists($pictureStatus.'slip.png')
                         ? $pictureStatus.'slip.png'
                         : null);
@@ -476,7 +476,7 @@ class DataManipulationController extends Controller
 
             // Seal picture
             if (str_contains($picture, 'seal')) {
-                $finalPreview[$serial]['seal_picture'] = File::exists($pictureStatus.'seal.jpg')
+                $finalPreview[$serial]['seal_image'] = File::exists($pictureStatus.'seal.jpg')
                     ? $pictureStatus.'seal.png'
                     : (File::exists($pictureStatus.'seal.png')
                         ? $pictureStatus.'seal.png'
@@ -485,7 +485,7 @@ class DataManipulationController extends Controller
 
             // Pallets picture
             if (str_contains($picture, 'pallets')) {
-                $finalPreview[$serial]['pallets_picture'] = File::exists($pictureStatus.'pallets.jpg')
+                $finalPreview[$serial]['pallets_image'] = File::exists($pictureStatus.'pallets.jpg')
                     ? $pictureStatus.'pallets.jpg'
                     : (File::exists($pictureStatus.'pallets.png')
                         ? $pictureStatus.'pallets.png'
