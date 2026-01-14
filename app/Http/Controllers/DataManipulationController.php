@@ -424,6 +424,7 @@ class DataManipulationController extends Controller
         $filePath = $year . '/' . $fileName;
 
         file_put_contents($filePath, $imageData);
+        chmod($filePath, 0644);
 
         $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
         if(!$getAllBooked){
