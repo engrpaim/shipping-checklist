@@ -388,9 +388,9 @@ class DataManipulationController extends Controller
             'captured_by' => 'required|string',
             'serial'=>'required|string'
         ]);
-
+        $serial = $request->input('serial');
         $path = '/var/data/Shipping_Check_List';
-        $year =  $path  ."/".  now()->year;
+        $year =  $path  ."/".  now()->year."/". $serial;
         // Ensure directory exists
         if (!file_exists($path)) {
             mkdir($path, 0755, true);
