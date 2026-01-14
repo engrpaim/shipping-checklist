@@ -490,6 +490,7 @@ class DataManipulationController extends Controller
                     : (File::exists($pictureStatus.'pallets.png')
                         ? $pictureStatus.'pallets.png'
                         : null);
+                        dd($pictureStatus.'pallets.jpg');
             }
         }
 
