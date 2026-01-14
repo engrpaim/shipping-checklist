@@ -377,7 +377,7 @@ export default function Queue(queueData){
                                             <div className="btn-container">
                                                 {
                                                      value["Shipment_Status"] === 'BOOKED' ?<button className="ship-btn" onClick={()=>{handleDatagrabber(key ,'LOADING')}}>CHECKED</button>
-                                                    :value["Shipment_Status"] === 'LOADING' && isCounted > 0  && isPictureExist?<button className="ship-btn" onClick={()=>{handleDatagrabber(key ,'SHIPPED')}}>SHIPPED</button>
+                                                    :value["Shipment_Status"] === 'LOADING' && isCounted > 0  && isPictureExist && (value["container_picture"] && value["pallets_picture"] &&value["slip_picture"]&& value["seal_picture"])?<button className="ship-btn" onClick={()=>{handleDatagrabber(key ,'SHIPPED')}}>SHIPPED</button>
                                                     :null
                                                 }
                                                 {
