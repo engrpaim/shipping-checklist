@@ -394,7 +394,7 @@ class DataManipulationController extends Controller
 
 
         $fileName = time().'_'.$request->photo_name.'.'.$file->getClientOriginalExtension();
-        dump($fileName);
+        dd($fileName);
         $file->move($path, $fileName);
 
         return back()->with('success', 'Photo uploaded');
