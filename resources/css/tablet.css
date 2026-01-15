@@ -355,8 +355,8 @@ button.save-btn {
     align-items: center;
     padding: 1rem;
     background: white;
-    width: 60vw;
-    height: 65vh;
+    width: 45vw;
+    height: 60vh;
     margin-top: 2rem;
     border-radius: 1rem;
 }
@@ -367,5 +367,5 @@ button.save-btn {
 .photo-image {
     margin: 1rem;
     width: 30rem;
-    height: 28rem;
+    height: 25rem;
 }
