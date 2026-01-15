@@ -383,7 +383,7 @@ class DataManipulationController extends Controller
 
     public function uploadPhoto(Request $request)
     {
-        $ip = $request->ip();
+              $ip = $request->ip();
         $check = Admin::where('ip_address','=',$ip)->first();
         $request->validate([
             'photo' => 'required|string',      // base64 string
@@ -439,7 +439,23 @@ class DataManipulationController extends Controller
  $path = '/var/data/Shipping_Check_List';
     $currentYear = Carbon::now()->year;
     $yearPath = $path ."/". $currentYear;
-       $displayPreview = [];
+    if(!File::exists($path)){
+        File::makeDirectory($path,0775,true);
+    }
+    if(!File::exists( $yearPath)){
+        File::makeDirectory($yearPath,0775,true);
+    }
+    $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
+        if(!$getAllBooked){
+            return Inertia::render('Main', [
+            'appName' => config('app.name'),
+            'page' => 'queue',
+            'queue' =>  null,
+            'client_ip' => $check->ip_address?? null,
+            'client_details' => $check ?? null
+        ]);
+    }
+    $displayPreview = [];
     $finalPreview = [];
     $files = ['container.jpg', 'container.png','pallets.jpg','pallets.jpg','slip.png','slip.jpg','seal.png','seal.jpg'];
     foreach($getAllBooked as $key => $value){
