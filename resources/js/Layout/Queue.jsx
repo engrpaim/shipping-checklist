@@ -5,6 +5,7 @@ import { useState ,useEffect , useRef} from "react";
 import { QRIcon ,CameraIcon ,CloseIcon,CheckCircleIcon,CloseIconCirle,UploadIcon} from "../SVG/ShippingLogos";
 import Webcam from "react-webcam";
 import jsQR from "jsqr";
+import AE from '../../images/AE.png';
 export default function Queue(queueData){
     const [checker , setChecker] = useState(null);
     const [scannedId , setScannedId ] = useState(null);
@@ -13,6 +14,8 @@ export default function Queue(queueData){
     const [openCamera , setOpenCamera] = useState(null);
     const [shipmentSerialSte, setShipmentSerial] = useState(null);
     const [captureImage ,setCapturedImage] = useState(null);
+    const [ImageEnlarge ,setImageEnlarge] = useState(null);
+    const [TitleImage ,setTitleImage] = useState(null);
     const videoRef = useRef(null);
     const streamRef = useRef(null);
     const canvasRef = useRef(null);
@@ -116,7 +119,7 @@ export default function Queue(queueData){
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
-        setScannedId('try');
+        setScannedId('tryS');
         setCapturedImage(null);
     }
     const handleCancel =()=>{
@@ -138,7 +141,9 @@ export default function Queue(queueData){
     }
     const handleCloseCamera=(shipment)=>{
         setOpenCamera(null);
-         setCapturedImage(null);
+        setCapturedImage(null);
+        setImageEnlarge(null);
+        setTitleImage(null);
     }
     const handleDatagrabber =(ShipmentSerial , status)=>{
         console.log('Updating: ....',ShipmentSerial);
@@ -190,10 +195,16 @@ export default function Queue(queueData){
     }
 
     const getImageUrl = (filePath) => {
-    if (!filePath) return null;
-    const relativePath = filePath.replace('/var/data/Shipping_Check_List/', '');
-    return `/images/${relativePath}`;
-};
+        if (!filePath) return null;
+        const relativePath = filePath.replace('/var/data/Shipping_Check_List/', '');
+        return `/images/${relativePath}`;
+    };
+
+    const handleEnlarge=(path,title)=>{
+        if(!path && !title) return;
+        setImageEnlarge(path);
+        setTitleImage(title);
+    }
 
     return(
         <>
@@ -302,7 +313,7 @@ export default function Queue(queueData){
                                                                         <input
                                                                             type="checkbox"
                                                                             onChange={()=>{handleInvoiceLoad(invoice)}}
-                                                                            disabled={!(data["Checked_by"] !== scannedId)}
+                                                                            disabled={!(data["Checked_by"] !== scannedId &&  scannedId )}
                                                                         />
                                                                         <span className="slider"></span>
                                                                     </label>:<div className="unload-container">
@@ -311,7 +322,7 @@ export default function Queue(queueData){
                                                                             value["Shipment_Status"] === 'LOADING' &&
                                                                             <button
                                                                                 onClick={()=>{handleUnload(invoice,'Counted_By')}}
-                                                                                disabled={!(data["Checked_by"] !== scannedId)}
+                                                                                disabled={!(data["Checked_by"] !== scannedId  &&  scannedId )}
                                                                                 style ={{ background: !statusScan ? 'gray':null }}
                                                                                 >Unload</button>
                                                                        }
@@ -327,7 +338,7 @@ export default function Queue(queueData){
                                         </tbody>
                                     </table>
                                 </div>
-                                {scannedId  && shipmentSerialSte.includes(key)?
+                                {scannedId  && shipmentSerialSte.includes(key) && value["Shipment_Status"] === 'LOADING'?
                                 <>
                                     <div className="photo-status">
                                         <div className="photo-status-data">
@@ -361,14 +372,64 @@ export default function Queue(queueData){
                                         </div>
                                     </div>
                                     <div className="photo-status">
-    {value["pallets_image"] && (
-        <img
-            src={getImageUrl(value["pallets_image"])}
-            alt="Pallets"
-            onError={(e) => e.target.style.display = 'none'}
-        />
-    )}
-</div>
+                                        {/* {value["pallets_image"] && (
+                                            <img
+                                                src={getImageUrl(value["pallets_image"])}
+                                                alt="Pallets"
+                                                onError={(e) => e.target.style.display = 'none'}
+                                                className="image-result"
+                                            />
+                                        )} */}
+
+                                        {value["container_picture"] && (
+                                            <div className="image-container">
+                                                <h1>CONTAINER PICTURE</h1>
+                                                <img
+                                                    src={getImageUrl(value["container_picture"])}
+                                                    alt="CONTAINER"
+                                                    onError={(e) => e.target.style.display = 'none'}
+                                                    className="image-result"
+                                                    onClick={()=>{handleEnlarge(value["container_picture"]),'CONTAINER'}}
+                                                />
+                                            </div>
+                                        )}
+                                        {value["pallets_picture"] && (
+                                            <div className="image-container">
+                                                <h1>PALLETS PICTURE</h1>
+                                                <img
+                                                    src={getImageUrl(value["pallets_picture"])}
+                                                    alt="Pallets"
+                                                    onError={(e) => e.target.style.display = 'none'}
+                                                    className="image-result"
+                                                    onClick={()=>{handleEnlarge(value["pallets_picture"]),'PALLETS'}}
+                                                />
+                                            </div>
+                                        )}
+                                        {value["slip_picture"] && (
+                                            <div className="image-container">
+                                                <h1>SLIP PICTURE</h1>
+                                                <img
+                                                    src={getImageUrl(value["slip_picture"])}
+                                                    alt="SLIP"
+                                                    onError={(e) => e.target.style.display = 'none'}
+                                                    className="image-result"
+                                                    onClick={()=>{handleEnlarge(value["slip_picture"]),'SLIP'}}
+                                                />
+                                            </div>
+                                        )}
+                                        {value["seal_picture"] && (
+                                            <div className="image-container">
+                                                <h1>SEAL PICTURE</h1>
+                                                <img
+                                                    src={getImageUrl(value["seal_picture"])}
+                                                    alt="SEAL"
+                                                    onError={(e) => e.target.style.display = 'none'}
+                                                    className="image-result"
+                                                    onClick={()=>{handleEnlarge(value["seal_picture"]),'SEAL'}}
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
                                 </>:null
                                 }
                                 {
@@ -389,7 +450,7 @@ export default function Queue(queueData){
                                             </div>
                                             <div className="btn-container">
                                                 {
-                                                     value["Shipment_Status"] === 'BOOKED' ?<button className="ship-btn" onClick={()=>{handleDatagrabber(key ,'LOADING')}}>CHECKED</button>
+                                                    value["Shipment_Status"] === 'BOOKED' ?<button className="ship-btn" onClick={()=>{handleDatagrabber(key ,'LOADING')}}>CHECKED</button>
                                                     :value["Shipment_Status"] === 'LOADING' && isCounted > 0  && isPictureExist && (value["container_picture"] && value["pallets_picture"] &&value["slip_picture"]&& value["seal_picture"])?<button className="ship-btn" onClick={()=>{handleDatagrabber(key ,'SHIPPED')}}>SHIPPED</button>
                                                     :null
                                                 }
@@ -419,6 +480,17 @@ export default function Queue(queueData){
                     })
                 }
             </div>
+            {
+                ImageEnlarge  &&
+                <div className="photo-container">
+                    <div className="photo-captured">
+                        <button  className="photo-click" onClick={()=>{handleCloseCamera()}}><CloseIcon size={15} color="#DE3818"/>
+                        </button>
+                        <h1>{TitleImage}</h1>
+                        <img className="photo-image" src={getImageUrl(ImageEnlarge)}/>
+                    </div>
+                </div>
+            }
             {
                 openCamera  &&
                 <div className="photo-container">

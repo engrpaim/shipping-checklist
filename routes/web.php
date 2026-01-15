@@ -38,8 +38,8 @@ Route::get('/shipping-checklist/booking', function (Request $request) {
 Route::get('/shipping-checklist/queue', function (Request $request) {
     $ip = $request->ip();
     $check = Admin::where('ip_address','=',$ip)->first();
-    // $path = 'C:/Shipping_Check_List';
-    $path = '/var/data/Shipping_Check_List';
+    $path = 'C:/Shipping_Check_List';
+    // $path = '/var/data/Shipping_Check_List';
     $currentYear = Carbon::now()->year;
     $yearPath = $path ."/". $currentYear;
     if(!File::exists($path)){

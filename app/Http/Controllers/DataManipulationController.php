@@ -458,46 +458,45 @@ class DataManipulationController extends Controller
             str_contains($picture,'seal') ? $finalPreview[$serial]['seal_picture'] = (File::exists($pictureStatus.'seal.jpg')||File::exists($pictureStatus.'seal.png')):null;
             str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (File::exists($pictureStatus.'pallets.jpg')||File::exists($pictureStatus.'pallets.png')):null;
 
-            if (str_contains($picture, 'container')) {
+        }
+
+    }
+
+     if (str_contains($picture, 'container')) {
                 $finalPreview[$serial]['container_image'] = File::exists($pictureStatus.'container.jpg')
-                    ? url($pictureStatus.'container.jpg')
+                    ? $pictureStatus.'container.jpg'
                     : (File::exists($pictureStatus.'container.png')
-                        ? url($pictureStatus.'container.png')
+                        ? $pictureStatus.'container.png'
                         : null);
             }
 
             // Slip picture
             if (str_contains($picture, 'slip')) {
                 $finalPreview[$serial]['slip_image'] = File::exists($pictureStatus.'slip.jpg')
-                    ? url($pictureStatus.'slip.jpg')
+                    ? $pictureStatus.'slip.jpg'
                     : (File::exists($pictureStatus.'slip.png')
-                        ?url($pictureStatus.'slip.png')
+                        ? $pictureStatus.'slip.png'
                         : null);
             }
 
             // Seal picture
             if (str_contains($picture, 'seal')) {
                 $finalPreview[$serial]['seal_image'] = File::exists($pictureStatus.'seal.jpg')
-                    ? url($pictureStatus.'seal.png')
+                    ? $pictureStatus.'seal.png'
                     : (File::exists($pictureStatus.'seal.png')
-                        ? url($pictureStatus.'seal.png')
+                        ? $pictureStatus.'seal.png'
                         : null);
             }
 
             // Pallets picture
             if (str_contains($picture, 'pallets')) {
                 $finalPreview[$serial]['pallets_image'] = File::exists($pictureStatus.'pallets.jpg')
-                    ? url($pictureStatus.'pallets.jpg')
+                    ? $pictureStatus.'pallets.jpg'
                     : (File::exists($pictureStatus.'pallets.png')
-                        ? url($pictureStatus.'pallets.png')
+                        ? $pictureStatus.'pallets.png'
                         : null);
 
             }
-        }
-
-    }
-
-
         return Inertia::render('Main', [
             'appName' => config('app.name'),
             'page' => 'queue',

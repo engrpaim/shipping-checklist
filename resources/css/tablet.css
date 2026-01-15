@@ -332,3 +332,33 @@ button.save-btn {
     background: none;
     border: none;
 }
+.image-result {
+    width: 12rem;
+    height: 12rem;
+}
+.image-container {
+    display: flex;
+    items: center;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    padding: 1rem;
+    border-radius: 2rem;
+    box-shadow:
+        rgba(0, 0, 0, 0.16) 0px 3px 6px,
+        rgba(0, 0, 0, 0.23) 0px 3px 6px;
+}
+.photo-captured {
+    background: white;
+    height: 70vh;
+    margin-top: 2rem;
+    border-radius: 1rem;
+}
+.photo-captured button {
+    background: none;
+    border: none;
+}
+.photo-image {
+    width: 30rem;
+    height: 30rem;
+}
