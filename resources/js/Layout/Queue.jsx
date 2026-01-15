@@ -429,16 +429,7 @@ export default function Queue(queueData){
                                                 />
                                             </div>
                                         )}
-                                         <div className="image-container">
-                                                <h1>SEAL PICTURE</h1>
-                                                <img
-                                                    src={AE}
-                                                    alt="SEAL"
-                                                    onError={(e) => e.target.style.display = 'none'}
-                                                    className="image-result"
-                                                    onClick={()=>{handleEnlarge(AE,'SEAL')}}
-                                                />
-                                            </div>
+
 
                                     </div>
                                 </>:null
