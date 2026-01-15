@@ -485,12 +485,11 @@ class DataManipulationController extends Controller
             }
 
             // Pallets picture
-            $pallet_image = null;
             if (str_contains($picture, 'pallets')) {
                 $finalPreview[$serial]['pallets_image'] = File::exists($pictureStatus.'pallets.jpg')
-                    ?  $pallet_image = File::get($pictureStatus.'pallets.jpg')
+                    ? url($pictureStatus.'pallets.jpg')
                     : (File::exists($pictureStatus.'pallets.png')
-                        ? $pallet_image = File::get($pictureStatus.'pallets.png')
+                        ? url($pictureStatus.'pallets.png')
                         : null);
 
             }
@@ -499,13 +498,13 @@ class DataManipulationController extends Controller
     }
 
 
-    return Inertia::render('Main', [
-        'appName' => config('app.name'),
-        'page' => 'queue',
-        'queue' =>  $finalPreview,
-        'client_ip' => $check->ip_address?? null,
-        'client_details' => $check ?? null
-    ]);
+        return Inertia::render('Main', [
+            'appName' => config('app.name'),
+            'page' => 'queue',
+            'queue' =>  $finalPreview,
+            'client_ip' => $check->ip_address?? null,
+            'client_details' => $check ?? null
+        ]);
     }
 
 }

@@ -108,12 +108,12 @@ Route::get('/shipping-checklist/queue', function (Request $request) {
                         : null);
             }
 
-            $pallet_image = null;
+            // Pallets picture
             if (str_contains($picture, 'pallets')) {
                 $finalPreview[$serial]['pallets_image'] = File::exists($pictureStatus.'pallets.jpg')
-                    ?  $pallet_image = File::get($pictureStatus.'pallets.jpg')
+                    ? $pictureStatus.'pallets.jpg'
                     : (File::exists($pictureStatus.'pallets.png')
-                        ? $pallet_image = File::get($pictureStatus.'pallets.png')
+                        ? $pictureStatus.'pallets.png'
                         : null);
 
             }
