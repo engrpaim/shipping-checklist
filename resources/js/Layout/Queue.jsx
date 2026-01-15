@@ -393,7 +393,7 @@ export default function Queue(queueData){
                                                 />
                                             </div>
                                         )}
-                                        {value["pallets_picture"] && (
+                                        {/* {value["pallets_picture"] && (
                                             <div className="image-container">
                                                 <h1>PALLETS PICTURE</h1>
                                                 <img
@@ -428,7 +428,7 @@ export default function Queue(queueData){
                                                     onClick={()=>{handleEnlarge(value["seal_picture"]),'SEAL'}}
                                                 />
                                             </div>
-                                        )}
+                                        )} */}
                                     </div>
                                 </>:null
                                 }
