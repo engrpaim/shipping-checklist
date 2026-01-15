@@ -481,7 +481,7 @@ export default function Queue(queueData){
                 }
             </div>
             {
-                ImageEnlarge  &&
+                ImageEnlarge  && TitleImage &&
                 <div className="photo-container">
                     <div className="photo-captured">
                         <button  className="photo-click" onClick={()=>{handleCloseCamera()}}><CloseIcon size={15} color="#DE3818"/>
