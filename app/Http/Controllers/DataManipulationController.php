@@ -457,12 +457,7 @@ class DataManipulationController extends Controller
             str_contains($picture,'slip') ? $finalPreview[$serial]['slip_picture'] = (File::exists($pictureStatus.'slip.jpg')||File::exists($pictureStatus.'slip.png')):null;
             str_contains($picture,'seal') ? $finalPreview[$serial]['seal_picture'] = (File::exists($pictureStatus.'seal.jpg')||File::exists($pictureStatus.'seal.png')):null;
             str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (File::exists($pictureStatus.'pallets.jpg')||File::exists($pictureStatus.'pallets.png')):null;
-
-        }
-
-    }
-
-        if (str_contains($picture, 'container')) {
+            if (str_contains($picture, 'container')) {
                 $finalPreview[$serial]['container_image'] = File::exists($pictureStatus.'container.jpg')
                     ? $pictureStatus.'container.jpg'
                     : (File::exists($pictureStatus.'container.png')
@@ -497,6 +492,11 @@ class DataManipulationController extends Controller
                         : null);
 
             }
+        }
+
+    }
+
+
         return Inertia::render('Main', [
             'appName' => config('app.name'),
             'page' => 'queue',
