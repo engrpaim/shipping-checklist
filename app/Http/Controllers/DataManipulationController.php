@@ -436,7 +436,7 @@ class DataManipulationController extends Controller
             'client_details' => $check ?? null
         ]);
     }
- $path = '/var/data/Shipping_Check_List';
+    $path = '/var/data/Shipping_Check_List';
     $currentYear = Carbon::now()->year;
     $yearPath = $path ."/". $currentYear;
     if(!File::exists($path)){
@@ -518,6 +518,7 @@ class DataManipulationController extends Controller
         }
 
     }
+
         return Inertia::render('Main', [
             'appName' => config('app.name'),
             'page' => 'queue',
