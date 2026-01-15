@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\SystemNotificationMail;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Response;
 use Carbon\Carbon;
 //@return user details
 Route::get('/shipping-checklist/home', function (Request $request) {
@@ -142,3 +143,17 @@ Route::post('/shipping-checklist/queue/mc',[DataManipulationController::class,'l
 Route::post('/shipping-checklist/queue/mcu',[DataManipulationController::class,'unLoadInvoice']);
 Route::post('/shipping-checklist/queue/mcups',[DataManipulationController::class,'updateStatus']);
 Route::post('/shipping-checklist/queue/photo',[DataManipulationController::class,'uploadPhoto']);
+
+Route::get('/images/{path}', function ($path) {
+    $path = str_replace(['../', '..\\'], '', $path);
+    $fullPath = "/var/data/Shipping_Check_List/{$path}";
+
+    if (!File::exists($fullPath)) {
+        abort(404, 'Image not found');
+    }
+
+    $file = File::get($fullPath);
+    $type = File::mimeType($fullPath);
+
+    return Response::make($file, 200)->header("Content-Type", $type);
+})->where('path', '.*');

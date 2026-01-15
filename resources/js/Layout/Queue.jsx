@@ -189,6 +189,12 @@ export default function Queue(queueData){
         });
     }
 
+    const getImageUrl = (filePath) => {
+    if (!filePath) return null;
+    const relativePath = filePath.replace('/var/data/Shipping_Check_List/', '');
+    return `/images/${relativePath}`;
+};
+
     return(
         <>
             <div className="tablet-container">
@@ -355,8 +361,14 @@ export default function Queue(queueData){
                                         </div>
                                     </div>
                                     <div className="photo-status">
-                                        {value["pallets_image"]  && <img src={value["pallets_image"]} alt="Pallets" />}
-                                    </div>
+    {value["pallets_image"] && (
+        <img
+            src={getImageUrl(value["pallets_image"])}
+            alt="Pallets"
+            onError={(e) => e.target.style.display = 'none'}
+        />
+    )}
+</div>
                                 </>:null
                                 }
                                 {
