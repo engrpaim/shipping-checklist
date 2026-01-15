@@ -119,7 +119,7 @@ export default function Queue(queueData){
     const handleScanId =(shipmentSerial)=> {
         setOpenCamera('SCAN ID');
         setShipmentSerial(shipmentSerial);
-        setScannedId(null);
+        setScannedId('tryS');
         setCapturedImage(null);
     }
     const handleCancel =()=>{
@@ -381,54 +381,54 @@ export default function Queue(queueData){
                                             />
                                         )} */}
 
-                                        {value["container_picture"] && (
+                                        {value["container_image"] && (
                                             <div className="image-container">
                                                 <h1>CONTAINER PICTURE</h1>
                                                 <img
-                                                    src={getImageUrl(value["container_picture"])}
+                                                    src={getImageUrl(value["container_image"])}
                                                     alt="CONTAINER"
                                                     onError={(e) => e.target.style.display = 'none'}
                                                     className="image-result"
-                                                    onClick={()=>{handleEnlarge(value["container_picture"]),'CONTAINER'}}
+                                                    onClick={()=>{handleEnlarge(value["container_image"]),'CONTAINER'}}
                                                 />
                                             </div>
                                         )}
-                                        {/* {value["pallets_picture"] && (
+                                        {value["pallets_image"] && (
                                             <div className="image-container">
                                                 <h1>PALLETS PICTURE</h1>
                                                 <img
-                                                    src={getImageUrl(value["pallets_picture"])}
+                                                    src={getImageUrl(value["pallets_image"])}
                                                     alt="Pallets"
                                                     onError={(e) => e.target.style.display = 'none'}
                                                     className="image-result"
-                                                    onClick={()=>{handleEnlarge(value["pallets_picture"]),'PALLETS'}}
+                                                    onClick={()=>{handleEnlarge(value["pallets_image"]),'PALLETS'}}
                                                 />
                                             </div>
                                         )}
-                                        {value["slip_picture"] && (
+                                        {value["slip_image"] && (
                                             <div className="image-container">
                                                 <h1>SLIP PICTURE</h1>
                                                 <img
-                                                    src={getImageUrl(value["slip_picture"])}
+                                                    src={getImageUrl(value["slip_image"])}
                                                     alt="SLIP"
                                                     onError={(e) => e.target.style.display = 'none'}
                                                     className="image-result"
-                                                    onClick={()=>{handleEnlarge(value["slip_picture"]),'SLIP'}}
+                                                    onClick={()=>{handleEnlarge(value["slip_image"]),'SLIP'}}
                                                 />
                                             </div>
                                         )}
-                                        {value["seal_picture"] && (
+                                        {value["seal_image"] && (
                                             <div className="image-container">
                                                 <h1>SEAL PICTURE</h1>
                                                 <img
-                                                    src={getImageUrl(value["seal_picture"])}
+                                                    src={getImageUrl(value["seal_image"])}
                                                     alt="SEAL"
                                                     onError={(e) => e.target.style.display = 'none'}
                                                     className="image-result"
-                                                    onClick={()=>{handleEnlarge(value["seal_picture"]),'SEAL'}}
+                                                    onClick={()=>{handleEnlarge(value["seal_image"]),'SEAL'}}
                                                 />
                                             </div>
-                                        )} */}
+                                        )}
                                     </div>
                                 </>:null
                                 }
