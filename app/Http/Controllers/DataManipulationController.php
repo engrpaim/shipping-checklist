@@ -288,7 +288,7 @@ class DataManipulationController extends Controller
         $finalPreview [$serial]['Shipment_Status'] = $getDGstatus;
 
         $checkingShipmentFolder = $year ."/". $value->Shipment_Serial;
-             dump($checkingShipmentFolder);
+
         if(!File::exists($checkingShipmentFolder)){
             File::makeDirectory($checkingShipmentFolder,0775,true);
         }
@@ -338,7 +338,7 @@ class DataManipulationController extends Controller
         }
 
         }
-        dd($finalPreview);
+
         return Inertia::render('Main', [
             'appName' => config('app.name'),
             'page' => 'queue',
