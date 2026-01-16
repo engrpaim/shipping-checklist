@@ -265,7 +265,8 @@ class DataManipulationController extends Controller
          $serial = $request->input('serial');
         $path = '/var/data/Shipping_Check_List';
         $year =  $path  ."/".  now()->year."/". $serial;
-$getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
+        dump($year);
+        $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
         if(!$getAllBooked){
             return Inertia::render('Main', [
             'appName' => config('app.name'),
@@ -287,7 +288,7 @@ $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhe
         $finalPreview [$serial]['Shipment_Status'] = $getDGstatus;
 
         $checkingShipmentFolder = $year ."/". $value->Shipment_Serial;
-
+             dump($checkingShipmentFolder);
         if(!File::exists($checkingShipmentFolder)){
             File::makeDirectory($checkingShipmentFolder,0775,true);
         }
