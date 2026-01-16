@@ -262,30 +262,79 @@ class DataManipulationController extends Controller
         }
 
 
-
-
-        $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
+         $serial = $request->input('serial');
+        $path = '/var/data/Shipping_Check_List';
+        $year =  $path  ."/".  now()->year."/". $serial;
+$getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
         if(!$getAllBooked){
-                return Inertia::render('Main', [
-                'appName' => config('app.name'),
-                'page' => 'queue',
-                'queue' =>  null,
-                'client_ip' => $check->ip_address?? null,
-                'client_details' => $check ?? null
-            ]);
-        }
-
-        $displayPreview = [];
+            return Inertia::render('Main', [
+            'appName' => config('app.name'),
+            'page' => 'queue',
+            'queue' =>  null,
+            'client_ip' => $check->ip_address?? null,
+            'client_details' => $check ?? null
+        ]);
+    }
         $finalPreview = [];
-        foreach($getAllBooked as $key => $value){
-            if(!$value->Shipment_Serial && !$value->Forwarder) return;
-            $serial = $value->Shipment_Serial;
-            $displayPreview [$serial]['Forwarder']=$value->Forwarder;
-            $queueDisplay = DataManipulationController::pullDataBooking($serial);
-            $finalPreview [$serial]= array_merge($queueDisplay[$serial] ,  $displayPreview[$serial]);
+        $files = ['container.jpg', 'container.png','pallets.jpg','pallets.jpg','slip.png','slip.jpg','seal.png','seal.jpg'];
+    foreach($getAllBooked as $key => $value){
+        if(!$value->Shipment_Serial && !$value->Forwarder) return;
+        $serial = $value->Shipment_Serial;
+        $displayPreview [$serial]['Forwarder']=$value->Forwarder;
+        $queueDisplay = DataManipulationController::pullDataBooking($serial);
+        $finalPreview [$serial]= array_merge($queueDisplay[$serial] ,  $displayPreview[$serial]);
+        $getDGstatus = DataManipulationController::pullDataGrabbers($serial);
+        $finalPreview [$serial]['Shipment_Status'] = $getDGstatus;
 
-            $getDGstatus = DataManipulationController::pullDataGrabbers($serial);
-            $finalPreview [$serial]['Shipment_Status'] = $getDGstatus;
+        $checkingShipmentFolder = $year ."/". $value->Shipment_Serial;
+
+        if(!File::exists($checkingShipmentFolder)){
+            File::makeDirectory($checkingShipmentFolder,0775,true);
+        }
+        $pictureStatus =  $checkingShipmentFolder. "/"  ;
+        foreach($files as $picture){
+            str_contains($picture,'container') ? $finalPreview[$serial]['container_picture'] = (File::exists($pictureStatus.'container.jpg')||File::exists($pictureStatus.'container.png')):null;
+            str_contains($picture,'slip') ? $finalPreview[$serial]['slip_picture'] = (File::exists($pictureStatus.'slip.jpg')||File::exists($pictureStatus.'slip.png')):null;
+            str_contains($picture,'seal') ? $finalPreview[$serial]['seal_picture'] = (File::exists($pictureStatus.'seal.jpg')||File::exists($pictureStatus.'seal.png')):null;
+            str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (File::exists($pictureStatus.'pallets.jpg')||File::exists($pictureStatus.'pallets.png')):null;
+
+
+             if (str_contains($picture, 'container')) {
+                $finalPreview[$serial]['container_image'] = File::exists($pictureStatus.'container.jpg')
+                    ? $pictureStatus.'container.jpg'
+                    : (File::exists($pictureStatus.'container.png')
+                        ? $pictureStatus.'container.png'
+                        : null);
+            }
+
+            // Slip picture
+            if (str_contains($picture, 'slip')) {
+                $finalPreview[$serial]['slip_image'] = File::exists($pictureStatus.'slip.jpg')
+                    ? $pictureStatus.'slip.jpg'
+                    : (File::exists($pictureStatus.'slip.png')
+                        ? $pictureStatus.'slip.png'
+                        : null);
+            }
+
+            // Seal picture
+            if (str_contains($picture, 'seal')) {
+                $finalPreview[$serial]['seal_image'] = File::exists($pictureStatus.'seal.jpg')
+                    ? $pictureStatus.'seal.png'
+                    : (File::exists($pictureStatus.'seal.png')
+                        ? $pictureStatus.'seal.png'
+                        : null);
+            }
+
+            // Pallets picture
+            if (str_contains($picture, 'pallets')) {
+                $finalPreview[$serial]['pallets_image'] = File::exists($pictureStatus.'pallets.jpg')
+                    ? $pictureStatus.'pallets.jpg'
+                    : (File::exists($pictureStatus.'pallets.png')
+                        ? $pictureStatus.'pallets.png'
+                        : null);
+
+            }
+        }
 
         }
 
@@ -383,7 +432,7 @@ class DataManipulationController extends Controller
 
     public function uploadPhoto(Request $request)
     {
-              $ip = $request->ip();
+        $ip = $request->ip();
         $check = Admin::where('ip_address','=',$ip)->first();
         $request->validate([
             'photo' => 'required|string',      // base64 string
@@ -517,7 +566,7 @@ class DataManipulationController extends Controller
             }
         }
 
-    }
+        }
 
         return Inertia::render('Main', [
             'appName' => config('app.name'),

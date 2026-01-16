@@ -186,6 +186,7 @@ export default function Queue(queueData){
             data:{
                 invoice:invoice??null,
                 column:column??null,
+                serial:shipmentSerialSte ?? null,
                 name: scannedId
             },
             preserveState:true,
