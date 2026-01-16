@@ -264,7 +264,7 @@ class DataManipulationController extends Controller
 
          $serial = $request->input('serial');
         $path = '/var/data/Shipping_Check_List';
-        $year =  $path  ."/".  now()->year."/". $serial;
+        $year =  $path  ."/".  now()->year;
         dump($year);
         $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
         if(!$getAllBooked){
