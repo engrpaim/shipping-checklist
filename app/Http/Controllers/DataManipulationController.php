@@ -337,7 +337,7 @@ $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhe
         }
 
         }
-
+        dd($finalPreview);
         return Inertia::render('Main', [
             'appName' => config('app.name'),
             'page' => 'queue',
