@@ -335,6 +335,8 @@ button.save-btn {
 .image-result {
     width: 12rem;
     height: 12rem;
+    border-radius: 1rem;
+    background: #fee685;
 }
 .image-container {
     display: flex;
