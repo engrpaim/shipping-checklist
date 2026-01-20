@@ -314,7 +314,7 @@ export default function Queue(queueData){
                                                                         <input
                                                                             type="checkbox"
                                                                             onChange={()=>{handleInvoiceLoad(invoice)}}
-                                                                            disabled={!(data["Checked_by"] !== scannedId &&  scannedId )}
+                                                                            disabled={!(data["Checked_by"] !== scannedId && data["Checked_by"] )}
                                                                         />
                                                                         <span className="slider"></span>
                                                                     </label>:<div className="unload-container">
@@ -323,7 +323,7 @@ export default function Queue(queueData){
                                                                             value["Shipment_Status"] === 'LOADING' &&
                                                                             <button
                                                                                 onClick={()=>{handleUnload(invoice,'Counted_By')}}
-                                                                                disabled={!(data["Checked_by"] !== scannedId  &&  !data["Checked_by"] )}
+                                                                                disabled={!(data["Checked_by"] !== scannedId  && data["Checked_by"] )}
                                                                                 style ={{ background: !statusScan ? 'gray':null }}
                                                                                 >Unload</button>
                                                                        }
