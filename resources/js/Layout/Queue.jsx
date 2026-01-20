@@ -198,7 +198,7 @@ export default function Queue(queueData){
     const getImageUrl = (filePath) => {
         if (!filePath) return null;
         const relativePath = filePath.replace('/var/data/Shipping_Check_List/', '');
-        return `/images/${relativePath}`;
+        return `/images/${relativePath}?v=${Date.now()}`;
     };
 
     const handleEnlarge=(path,title)=>{
