@@ -594,6 +594,8 @@ class DataManipulationController extends Controller
 
 
              if (str_contains($picture, 'container')) {
+                File::exists($pictureStatus.'container.jpg') ?? File::delete($pictureStatus.'container.jpg');
+                File::exists($pictureStatus.'container.png') ?? File::delete($pictureStatus.'container.png');
                 $finalPreview[$serial]['container_image'] = File::exists($pictureStatus.'container.jpg')
                     ? $pictureStatus.'container.jpg'
                     : (File::exists($pictureStatus.'container.png')
