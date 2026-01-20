@@ -536,19 +536,19 @@ class DataManipulationController extends Controller
         $fileName = $request->photo_name . '.' . $extension;
         $filePath = $year . '/' . $fileName;
 
-        file_put_contents($filePath, $imageData);
+        file_put_contents($filePath, $imageData,LOCK_EX);
         chmod($filePath, 0644);
 
         $getAllBooked = DB::table('data_grabbers')->where('Status' ,'=','BOOKED')->orWhere('Status','=','LOADING')->get();
         if(!$getAllBooked){
             return Inertia::render('Main', [
-            'appName' => config('app.name'),
-            'page' => 'queue',
-            'queue' =>  null,
-            'client_ip' => $check->ip_address?? null,
-            'client_details' => $check ?? null
-        ]);
-    }
+                'appName' => config('app.name'),
+                'page' => 'queue',
+                'queue' =>  null,
+                'client_ip' => $check->ip_address?? null,
+                'client_details' => $check ?? null
+            ]);
+        }
     $path = '/var/data/Shipping_Check_List';
     $currentYear = Carbon::now()->year;
     $yearPath = $path ."/". $currentYear;
@@ -593,9 +593,8 @@ class DataManipulationController extends Controller
             str_contains($picture,'pallets') ? $finalPreview[$serial]['pallets_picture'] = (File::exists($pictureStatus.'pallets.jpg')||File::exists($pictureStatus.'pallets.png')):null;
 
 
-             if (str_contains($picture, 'container')) {
-                File::exists($pictureStatus.'container.jpg') ?? File::delete($pictureStatus.'container.jpg');
-                File::exists($pictureStatus.'container.png') ?? File::delete($pictureStatus.'container.png');
+            if (str_contains($picture, 'container')) {
+
                 $finalPreview[$serial]['container_image'] = File::exists($pictureStatus.'container.jpg')
                     ? $pictureStatus.'container.jpg'
                     : (File::exists($pictureStatus.'container.png')
